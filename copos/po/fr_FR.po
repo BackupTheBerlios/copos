@@ -1,0 +1,237 @@
+# French translations for PACKAGE package
+# Traduction anglaise du package PACKAGE.
+# Copyright (C) 2004 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ronan Billon <cirdan@mail.berlios.de>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-08-31 13:10+0200\n"
+"PO-Revision-Date: 2004-08-31 13:10+0200\n"
+"Last-Translator: Ronan Billon <cirdan@mail.berlios.de>\n"
+"Language-Team: French <traduc@traduc.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: display/visualization.c:404
+msgid "Visualization"
+msgstr ""
+
+#: display/generate.c:159
+msgid "Analyze"
+msgstr ""
+
+#: display/generate.c:169
+msgid "Analyze each image"
+msgstr ""
+
+#: display/generate.c:221
+msgid "Please, add a value greater than 0.0"
+msgstr ""
+
+#: display/generate.c:250
+msgid "Normalize the points. That can take time (and freeze the application)"
+msgstr ""
+
+#: display/generate.c:416
+msgid ""
+"Check that the centre of rotation (symbolized by the white line) is "
+"correctly positioned. \n"
+"If it is not the case, start again the preceding stage. "
+msgstr ""
+
+#: display/generate.c:443
+msgid "Navigate"
+msgstr ""
+
+#: display/generate.c:470
+msgid "Rotation of the object (in degree)"
+msgstr ""
+
+#: display/generate.c:478
+msgid "Translation of the object"
+msgstr ""
+
+#: display/generate.c:520 display/generate.c:546
+msgid "Generate"
+msgstr ""
+
+#: display/positions.c:58
+msgid "Add the value of the distance between webcam and the laser pointer\n"
+msgstr ""
+
+#: display/positions.c:124
+msgid ""
+"Check your values,\n"
+"There's a problem during the compute"
+msgstr ""
+
+#: display/positions.c:237
+msgid "The focal distance of the webcam (in pixels, see documentations) "
+msgstr ""
+
+#: display/positions.c:244
+msgid "Distance between the webcam and the laser pointer"
+msgstr ""
+
+#: display/positions.c:251
+msgid "The angle formed by the webcam "
+msgstr ""
+
+#: display/positions.c:258
+msgid "Distance between the departure of the laser and the table "
+msgstr ""
+
+#: display/positions.c:271 display/picklaser.c:639 display/recorder.c:391
+#: display/choosedevice.c:271 display/introduction.c:177
+msgid "Next >"
+msgstr ""
+
+#: display/positions.c:284
+msgid "Set the positions"
+msgstr ""
+
+#: display/picklaser.c:521
+msgid "Scale : "
+msgstr ""
+
+#: display/picklaser.c:548
+msgid "Number of points : "
+msgstr ""
+
+#: display/picklaser.c:552 display/recorder.c:367 display/recorder.c:374
+msgid "0"
+msgstr ""
+
+#: display/picklaser.c:569
+msgid "Red : "
+msgstr ""
+
+#: display/picklaser.c:576
+msgid "Green : "
+msgstr ""
+
+#: display/picklaser.c:583
+msgid "Blue : "
+msgstr ""
+
+#: display/picklaser.c:625
+msgid "Pick"
+msgstr ""
+
+#: display/picklaser.c:689
+msgid "Pick the laser"
+msgstr ""
+
+#: display/recorder.c:131
+msgid "Couldn't stop the function recorder_update_image"
+msgstr ""
+
+#: display/recorder.c:161
+msgid "Couldn't stop the function recorder_store_image"
+msgstr ""
+
+#: display/recorder.c:187 display/recorder.c:242 display/choosedevice.c:98
+#: display/choosedevice.c:141 display/choosedevice.c:185
+msgid "Couldn't stop the function update_image"
+msgstr ""
+
+#: display/recorder.c:325 display/recorder.c:409
+msgid "Record"
+msgstr ""
+
+#: display/recorder.c:330
+msgid "Stop"
+msgstr ""
+
+#: display/recorder.c:345
+msgid "secondes (recording time)"
+msgstr ""
+
+#: display/recorder.c:353
+msgid "Number of frames per seconds :"
+msgstr ""
+
+#: display/recorder.c:360
+msgid "Number of recorded frames : "
+msgstr ""
+
+#: display/choosemodule.c:25
+msgid "getWebcam is not provided in the module"
+msgstr ""
+
+#: display/choosemodule.c:34
+msgid "Impossible to initialize the webcam"
+msgstr ""
+
+#: display/choosemodule.c:40
+msgid "Impossible to use the webcam"
+msgstr ""
+
+#: display/choosemodule.c:130
+msgid "Select the device"
+msgstr ""
+
+#: display/choosemodule.c:166
+msgid "Browse"
+msgstr ""
+
+#: display/choosemodule.c:170
+msgid "Device : "
+msgstr ""
+
+#: display/choosemodule.c:177
+msgid "Module : "
+msgstr ""
+
+#: display/choosemodule.c:211
+msgid "Error during the selection"
+msgstr ""
+
+#: display/choosemodule.c:252
+msgid "getGtkConf is not provided in the module"
+msgstr ""
+
+#: display/choosedevice.c:102
+msgid "Beware no webcam selected"
+msgstr ""
+
+#: display/choosedevice.c:251
+msgid "Device..."
+msgstr ""
+
+#: display/choosedevice.c:256
+msgid "Configuration..."
+msgstr ""
+
+#: display/choosedevice.c:290
+msgid "Choose device"
+msgstr ""
+
+#: display/introduction.c:53
+msgid "The cheapest 3D Scanner !\n"
+msgstr ""
+
+#: display/introduction.c:185
+msgid "Introduction"
+msgstr ""
+
+#: display/mainwindow.c:99
+msgid "Copos"
+msgstr ""
+
+#: display/mainwindow.c:110
+msgid "_File"
+msgstr ""
+
+#: display/mainwindow.c:130
+msgid "_Help"
+msgstr ""
+
+#: display/mainwindow.c:137
+msgid "_About"
+msgstr ""

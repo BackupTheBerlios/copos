@@ -1,0 +1,108 @@
+
+
+  COPOS
+
+  - Cloud Of Points Of a Scanner
+
+
+General Information
+===================
+
+COPOS is a software to control a webcam and transform it as a 3D scanner
+
+The official web site is:
+  http://copos.berlios.de/
+
+The official download & development project site is:
+  http://developer.berlios.de/project/showfiles.php?group_id=2163
+
+Licensing
+=========
+
+COPOS is released under the terms of the GNU General Public License 
+(GNU LGPL). 
+
+
+Supported Platforms
+===================
+
+Currently COPOS supports
+
+  * Linux with a webcam
+      Tested under Linux
+
+
+Requirements
+============
+
+  * GNU C compiler
+
+  * GNU make
+
+  * GTK 2.0 or later (http://www.gtk.org/)
+
+  * OpenGL or Mesa (http://www.mesa3d.org/)
+
+  * GTK-Doc (http://www.gtk.org/rdp/)  [optional]
+
+  * GtkGLExt 1.0 or later
+
+
+Installation
+============
+
+To build and install COPOS, type follows (use GNU make)
+
+  $ ./configure --prefix=/foo/bar (other options...)
+  $ make (or gmake)
+  $ make install
+
+
+Please read INSTALL or type "./configure --help" for more details.
+
+
+Configure Options
+=================
+
+  --disable-pwc		disable Philips740K module compilation
+  --include-pwc=DIR	pwc-ioctl.h is installed in DIR [default=/usr/src/linux/drivers/usb/media/]
+
+Building the CVS Version of GtkGLExt
+====================================
+
+COPOS's Berlios CVS repository can be checked out through
+anonymous (pserver) CVS with the following instruction set.
+When prompted for a password for anonymous, simply press the Enter key. 
+
+  $ cvs \
+      -d:pserver:anonymous@cvs.berlios.de:/cvsroot/copos \
+      login
+  $ cvs -z3 \
+      -d:pserver:anonymous@cvs.berlios.de:/cvsroot/copos \
+      co copos
+
+When you are at work on the CVS version of COPOS, you can use autogen.sh
+for generating configure script and Makefiles.
+
+  $ ./autogen.sh
+  $ make
+  $ make install
+
+You may have to set ACLOCAL_FLAGS environment variable for some m4
+macros used in configure.in.
+
+The following versions of the GNU autotools are required.
+
+  autoconf 2.x and above
+  automake 1.4.x
+  libtool  1.4
+
+
+Contact
+=======
+
+Any patches, bug fixes and improvements are always welcome ;-)
+
+  Ronan Billon  <cirdan@mail.berlios.de>
+
+

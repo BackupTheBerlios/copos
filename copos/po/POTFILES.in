@@ -1,0 +1,11 @@
+display/visualization.c
+display/generate.c
+display/positions.c
+display/picklaser.c
+display/recorder.c
+display/choosemodule.c
+display/choosedevice.c
+display/introduction.c
+display/mainwindow.c
+main.c
+global.c
