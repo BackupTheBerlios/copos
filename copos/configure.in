@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(global.c)
-AM_INIT_AUTOMAKE(copos, "0.5")
+AM_INIT_AUTOMAKE(copos, "0.7")
 AM_CONFIG_HEADER(config.h:config.h.in)
 
 dnl Checks for programs.
