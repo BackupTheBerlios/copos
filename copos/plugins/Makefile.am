@@ -15,7 +15,7 @@ libgenericv4l_la_LIBADD  = @GLIB2_LIBS@
 libgenericv4l_la_LDFLAGS = -rpath $(pkgdatadir) -avoid-version -module
 
 libphilips740k_la_SOURCES = 	philips740k.c  philips740k.h  webcam.h \
-				confphilips.c confphilips.h 	
+				confphilips.c confphilips.h \
 				confsizefrm.c confsizefrm.h \
 				confvidctrl.c confvidctrl.h \
 				confextensions.c confextensions.h \
