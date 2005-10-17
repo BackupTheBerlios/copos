@@ -1,4 +1,13 @@
-2004-09-01  Ronan Billon <cirdan@mail.berlios.de>
+2005-10-17  Ronan Billon <cirdan@mail.berlios.de>
+        * ==== Released 0.8.0 ====
+A lot of things !
+- add french translation
+- use the new gtk_file_chooser_dialog
+- update the usage of dialog box
+- change the webcam support to the video file support
+- use FFMpeg to manage video file
+- clean up some unnecessary line
 
+2004-09-01  Ronan Billon <cirdan@mail.berlios.de>
 	* ==== Released 0.7.0 ====
 
