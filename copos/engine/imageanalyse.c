@@ -1,15 +1,119 @@
 /************************************************************************
 * Fichier          : imageanalyse.c
-* Date de Creation : jeu aoû 12 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on jeu aoû 12 2004 at 11:44:14 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #include "engine/imageanalyse.h"
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "ImageAnalyse"
+
+static gint 
+analyse_line(ImageAnalyse* this, 
+	     guchar *line, 
+	     guint width, 
+	     guint bytes_per_pixel);
+
+/**
+ * Constructor
+ */
+ImageAnalyse*  ImageAnalyse_new ()
+{
+  /* Variables and pre-cond */
+  ImageAnalyse* ret = (ImageAnalyse*) g_malloc(sizeof(ImageAnalyse));
+  /* Code */
+  ret->edgeOfRed = 0;
+  ret->edgeOfGreen = 0;
+  ret->edgeOfBlue = 0;
+
+  return ret;
+}
+
+  
+
+/**
+ * Destructor
+ */
+void  ImageAnalyse_destroy (ImageAnalyse *this)
+{
+  /* Variables and pre-cond */
+  g_assert(this != NULL);
+  /* Code */
+  g_free(this);
+}
+
+  
+
+/**
+ * Takes an RGB ImageAnalyse_image (ImageAnalyse *this, pixbuf) and returns over an array of 2D points 
+ * @param *pixbuf The pixbuf to be analyzed
+ */
+GSList*  ImageAnalyse_computePixbuf (ImageAnalyse *this, GdkPixbuf *pixbuf)
+{
+  /* Variables and pre-cond */
+  guint y, width, height, rowstride, bytes_per_pixel;
+  guchar *start;
+  GSList *ret  = NULL;
+  g_return_val_if_fail(this != NULL, NULL);
+  g_return_val_if_fail(pixbuf != NULL, NULL);
+  if((this->edgeOfRed == 0) &&
+     (this->edgeOfGreen == 0) &&
+     (this->edgeOfBlue == 0)) {
+    return NULL;
+  }
+  /* Code */
+  bytes_per_pixel = gdk_pixbuf_get_has_alpha(pixbuf) ? 4 : 3;
+  rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+  start = gdk_pixbuf_get_pixels(pixbuf);
+  width = gdk_pixbuf_get_width(pixbuf);
+  height = gdk_pixbuf_get_height(pixbuf);
+
+  for(y=0;y<height;++y) {
+    gint x = analyse_line(this,start+(y*rowstride),width, bytes_per_pixel);
+    if(x != -1) {
+      Point2D *pt = Point2D_new(x,y);
+      ret = g_slist_append(ret,pt);
+    } 
+  }
+  return ret;
+
+}
+
+  
+
+/**
+ * Takes an RGB image and returns over an array of 2D points
+ * @param *image the image to be analyze
+ * @param width the width of the image
+ * @param height  the height of the image
+ * @param bytesPerPixel the number of bytes of the image
+ */
+GSList*  ImageAnalyse_computeImage (ImageAnalyse *this, guchar *image, guint width, guint height , guint bytesPerPixel)
+{
+  /* Variables and pre-cond */
+  guint y;
+  GSList *ret = NULL;
+  g_return_val_if_fail(this != NULL, NULL);
+  g_return_val_if_fail(image != NULL, NULL);
+  g_return_val_if_fail(width > 0, NULL);
+  g_return_val_if_fail(height > 0, NULL);
+  g_return_val_if_fail(bytesPerPixel > 0, NULL);
+  /* Code */
+  for(y=0;y<height;++y) {
+    gint x = analyse_line(this, 
+			  image+(width*bytesPerPixel*y), 
+			  width, 
+			  bytesPerPixel);
+    if(x != -1) {
+      Point2D *pt = Point2D_new(x,y);
+      ret = g_slist_append(ret,pt);
+    }
+  }
+  return ret;
+}
 
 static gint 
 analyse_line(ImageAnalyse* this, 
@@ -78,106 +182,3 @@ analyse_line(ImageAnalyse* this,
   
   return ret;
 }
-
-/**
- * Constructor
- */
-ImageAnalyse*  ImageAnalyse_new ()
-{
-  /* Variables and pre-cond */
-  ImageAnalyse* ret = (ImageAnalyse*) g_malloc(sizeof(ImageAnalyse));
-  /* Code */
-  ret->edgeOfRed = 0;
-  ret->edgeOfGreen = 0;
-  ret->edgeOfBlue = 0;
-
-  return ret;
-}
-
-  
-
-/**
- * Destructor
- * @param *this The object to be destroyed
- */
-void  ImageAnalyse_destroy (ImageAnalyse *this)
-{
-  /* Variables and pre-cond */
-  g_assert(this != NULL);
-  /* Code */
-  g_free(this);
-}
-
-  
-
-/**
- * Takes an RGB image (pixbuf) and returns over an array of 2D points (or NULL)
- * @param *this The object which perform the analyze
- * @param *pixbuf The pixbuf to be analyzed
- */
-GSList*  ImageAnalyse_computePixbuf (ImageAnalyse *this, GdkPixbuf *pixbuf)
-{
-  /* Variables and pre-cond */
-  guint y, width, height, rowstride, bytes_per_pixel;
-  guchar *start;
-  GSList *ret  = NULL;
-  g_return_val_if_fail(this != NULL, NULL);
-  g_return_val_if_fail(pixbuf != NULL, NULL);
-  if((this->edgeOfRed == 0) &&
-     (this->edgeOfGreen == 0) &&
-     (this->edgeOfBlue == 0)) {
-    return NULL;
-  }
-  /* Code */
-  bytes_per_pixel = gdk_pixbuf_get_has_alpha(pixbuf) ? 4 : 3;
-  rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-  start = gdk_pixbuf_get_pixels(pixbuf);
-  width = gdk_pixbuf_get_width(pixbuf);
-  height = gdk_pixbuf_get_height(pixbuf);
-
-  for(y=0;y<height;++y) {
-    gint x = analyse_line(this,start+(y*rowstride),width, bytes_per_pixel);
-    if(x != -1) {
-      Point2D *pt = Point2D_new(x,y);
-      ret = g_slist_append(ret,pt);
-    } 
-  }
-  return ret;
-}
-
-  
-
-/**
- * Takes an RGB image and returns over an array of 2D points
- * @param *this The object which perform the analyze
- * @param *image The image to be analyze
- * @param width The width of the image
- * @param height The height of the image
- * @param bytesPerPixel The number of bytes of the image
- */
-GSList*  ImageAnalyse_computeImage (ImageAnalyse *this, guchar *image, guint width, guint height, guint bytesPerPixel)
-{
-  /* Variables and pre-cond */
-  guint y;
-  GSList *ret = NULL;
-  g_return_val_if_fail(this != NULL, NULL);
-  g_return_val_if_fail(image != NULL, NULL);
-  g_return_val_if_fail(width > 0, NULL);
-  g_return_val_if_fail(height > 0, NULL);
-  g_return_val_if_fail(bytesPerPixel > 0, NULL);
-  /* Code */  
-  for(y=0;y<height;++y) {
-    gint x = analyse_line(this, 
-			  image+(width*bytesPerPixel*y), 
-			  width, 
-			  bytesPerPixel);
-    if(x != -1) {
-      Point2D *pt = Point2D_new(x,y);
-      ret = g_slist_append(ret,pt);
-    }
-  }
-  return ret;
-}
-
-  
-

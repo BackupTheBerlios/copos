@@ -9,4 +9,4 @@ libengine_a_SOURCES =   point2d.c point2d.h \
 			perspectivecreator.c perspectivecreator.h \
 			imageanalyse.c imageanalyse.h \
 			storage.c storage.h \
-			collector.c collector.h \
+			collector.c collector.h

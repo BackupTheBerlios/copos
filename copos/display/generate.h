@@ -29,10 +29,6 @@ typedef struct Generate
    */
    GtkWidget *mainWidget;
   /**
-   * The widget which displays the current stored image and the axis of rotation
-   */
-   GtkWidget *image;
-  /**
    * The position of the axis of rotation on the picture (in pixel)
    */
    guint rotationCenterPixel;
@@ -40,6 +36,10 @@ typedef struct Generate
    * The position of the axis of rotation in the world (z coordinate)
    */
    gdouble rotationCenterReal;
+  /**
+   * The widget which displays the current stored image and the axis of rotation
+   */
+   GtkWidget *img_generate;
   /**
    * The widget to enter the value of the total rotation of the scanned object
    */
@@ -49,9 +49,9 @@ typedef struct Generate
    */
    GtkWidget *ent_translation;
   /**
-   * A direct link to the global storage object
+   * The field which throw the signal interruption of computation
    */
-   Storage *storage;
+   gboolean interrupt;
   /**
    * The next page
    */
@@ -61,9 +61,8 @@ typedef struct Generate
 
   /**
    * Constructor
-   * @param center Center of the table (distance between laser and table)
    */
-  Generate*  Generate_new (gdouble center);
+  Generate*  Generate_new ();
     
   
   /**

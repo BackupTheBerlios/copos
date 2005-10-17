@@ -1,24 +1,22 @@
 /************************************************************************
 * Fichier          : matrix.h
-* Date de Creation : jeu mar 25 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on jeu mar 25 2004 at 21:26:13 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #ifndef MATRIX_H
 #define MATRIX_H
-
 #include <math.h>
-
+#include <string.h>
 #include "point3d.h"
 
 /**
   * Class Matrix
   * This structure makes it possible to manage the two-dimensional array. 
-  * There is in more some special functions in tables 4x4 of 
-  * 3D transformations.
+  * There is some special functions for the 3D transformations.
   * 
   */
 typedef struct Matrix
@@ -43,8 +41,8 @@ typedef struct Matrix
 
   /**
    * Basic constructor
-   * @param rows The Number of rows
-   * @param cols The Number of columns
+   * @param rows The number of rows
+   * @param cols The number of columns
    */
   Matrix*  Matrix_new (guint rows, guint cols);
     
@@ -64,23 +62,20 @@ typedef struct Matrix
   
   /**
    * Destructor
-   * @param *this The object to be destroy
    */
   void  Matrix_destroy (Matrix *this);
     
   
   /**
    * Return the element
-   * @param *this The matrix
-   * @param row The row where to seek the element 
+   * @param row The row where to seek the element
    * @param col The column where to seek the element
    */
   gdouble  Matrix_get (Matrix *this, guint row, guint col);
     
   
   /**
-   * Return a pointer on the modifiable area/box
-   * @param *this The matrix
+   *  Return a pointer on the modifiable area/box
    * @param row The row where to seek the element 
    * @param col The column where to seek the element
    */
@@ -90,28 +85,25 @@ typedef struct Matrix
   /**
    * Copy a matrix in another one
    * @param *src The source to be copied
-   * @param *dst The destination matrix (it will be erased)
+   * @param *dst The destination Matrix_matrix (Matrix *this, it will be erased)
    */
   void  Matrix_copy (Matrix *src, Matrix *dst);
     
   
   /**
-   * Put to zero the matrix
-   * @param *this The matrix
+   * Put all elements to zero
    */
   void  Matrix_setZero (Matrix *this);
     
   
   /**
-   * Transform into an identity matrix (Warning: cols == rows) 
-   * @param *this  The matrix
+   * Transform into an identity Matrix_matrix (Matrix *this, Warning: cols == rows) 
    */
   void  Matrix_setIdentity (Matrix *this);
     
   
   /**
    * Add a rotation in radian to the matrix 
-   * @param *this the matrix
    * @param rad The angle in radian
    */
   void  Matrix_rotX (Matrix *this, gdouble rad);
@@ -119,7 +111,6 @@ typedef struct Matrix
   
   /**
    * Add a rotation in radian to the matrix 
-   * @param *this the matrix
    * @param rad The angle in radian
    */
   void  Matrix_rotY (Matrix *this, gdouble rad);
@@ -127,38 +118,33 @@ typedef struct Matrix
   
   /**
    * Add a rotation in radian to the matrix 
-   * @param *this the matrix
    * @param rad The angle in radian
    */
   void  Matrix_rotZ (Matrix *this, gdouble rad);
     
   
   /**
-   * Add translation (x, y, z) to the matrix 
-   * @param *this The matrix
+   * Add Matrix_translation (Matrix *this, x, y, z) to the matrix 
    * @param x Displacement in x 
    * @param y Displacement in y
-   * @param z Displacement in z 
+   * @param z Displacement in z
    */
   void  Matrix_translation (Matrix *this, gdouble x, gdouble y, gdouble z);
     
   
   /**
-   * Function makes the  product of two matrix. 
-   * The result will be in the first parameter. 
-   * @param *this The matrix which will receive the product of both 
-   * @param *mat  The other matrix
+   * This function makes the  product of two matrix
+   * @param *mat The matrix to be the argument of the product
    */
   void  Matrix_product (Matrix *this, Matrix *mat);
     
   
   /**
-   * Makes the transformation of the point. 
-   * @param *this The transform matrix
+   * It makes the transformation of a point
    * @param *src The source point which will be transformed
    * @param *dst the resulting point
    */
-  void  Matrix_transform (Matrix *this, const Point3D *src, Point3D *dst);
+  void  Matrix_transform (Matrix *this, Point3D *src, Point3D *dst);
     
   
 #endif //MATRIX_H

@@ -1,4 +1,4 @@
-SUBDIRS = po engine display plugins 
+SUBDIRS = po engine display 
 bin_PROGRAMS = copos
 
 INCLUDES = -I.. @GTKGL_CFLAGS@
@@ -10,14 +10,6 @@ copos_LDADD = engine/libengine.a \
 
 install-data-local:
 	@$(NORMAL_INSTALL)
-	if test -d $(srcdir)/plugins/.libs ; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir); \
-	  for lib in $(srcdir)/plugins/.libs/*.so; do \
-	    if test -f $$lib; then \
-	      $(INSTALL_DATA) $$lib $(DESTDIR)$(pkgdatadir); \
-	    fi \
-	  done \
-	fi
 	if test -d $(srcdir)/pixmaps ; then \
 	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir); \
 	  for pix in $(srcdir)/pixmaps/*; do \

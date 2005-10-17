@@ -1,10 +1,10 @@
 /************************************************************************
 * Fichier          : global.c
-* Date de Creation : mar aoû 10 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on mar aoû 10 2004 at 11:05:55 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #include "global.h"
@@ -16,17 +16,16 @@ This file was generated on mar aoû 10 2004 at 11:05:55 with umbrello
  */
 static  Global *global = NULL;
 
+
 /**
  * Return the static global object
  */
 Global*  Global_get ()
 {
+  /* Variables and pre-cond */
+  /* Code */
   if(global == NULL) {
     global = (Global*) g_malloc(sizeof(Global));
-    global->modules = NULL;
-    global->modulesNames = NULL;
-    global->modulesPath = strdup(PACKAGE_DATA_DIR);
-    global->webcam = NULL;
     global->storage = NULL;
     global->imageAnalyse = NULL;
     global->perspectiveCreator = NULL;
@@ -39,17 +38,15 @@ Global*  Global_get ()
   }
 }
 
-  
-
 /**
  * Destroy the global object and all of its pointers
  */
 void  Global_destroy ()
 {
+  /* Variables and pre-cond */
+  /* Code */
   Global *this = Global_get();
-  if(this->webcam != NULL) {
-    (this->webcam)->close(this->webcam);
-  }
+  
   if(this->storage != NULL) {
     Storage_destroy(this->storage);
   }
@@ -62,11 +59,6 @@ void  Global_destroy ()
   if(this->collector != NULL) {
     Collector_destroy(this->collector);
   }
-  g_slist_foreach(this->modules,(GFunc) g_module_close,NULL);
-  g_slist_free(this->modules);
-  g_slist_foreach(this->modulesNames,(GFunc) g_free,NULL);
-  g_slist_free(this->modulesNames);
-  g_free(this->modulesPath);
   g_object_unref(this->parent);
   g_free(this);
 }
@@ -75,38 +67,40 @@ void  Global_destroy ()
 
 /**
  * Display an error message to the user
- * @param *message The message to be displayed
+ * @param *message the message to be displayed
  */
 void  Global_errMessage (const gchar *message)
 {
+  /* Variables and pre-cond */
   GtkWidget *dialog;
-  gchar* sUtf8;
+  /*  gchar* sUtf8;*/
   g_return_if_fail(message != NULL);
-  g_warning(message);
-  sUtf8 = g_locale_to_utf8(message,-1, NULL, NULL, NULL);
+  /* Code */
+  /*  sUtf8 = g_locale_to_utf8(message,-1, NULL, NULL, NULL); */
   dialog = gtk_message_dialog_new(NULL,
 				  GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_ERROR,
                                   GTK_BUTTONS_CLOSE,
-                                  sUtf8);
+                                  message);
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
-  g_free(sUtf8);
+  /*  g_free(sUtf8);*/
 }
 
   
 
 /**
  * A function to put a pixel in a pixbuf
- * @param *pixbuf The pixbuf to be modified
- * @param x Coordinate x
- * @param y Coordinate y
- * @param red The red of the pixel
- * @param green The green of the pixel
- * @param blue The blue of the pixel
+ * @param *pixbuf the pixbuf to be modified
+ * @param x coordinate x
+ * @param y coordinate y
+ * @param red the red value of the pixel
+ * @param green the green value of the pixel
+ * @param blue the blue value of the pixel
  */
-void  Global_putPixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green, guchar blue)
+void  Global_putPixel (GdkPixbuf *pixbuf, gint x, gint y, guchar red, guchar green, guchar blue)
 {
+  /* Variables and pre-cond */
   int width, height, rowstride, n_channels;
   guchar *pixels, *p;
 
@@ -122,7 +116,8 @@ void  Global_putPixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green
 
   g_assert (x >= 0 && x < width);
   g_assert (y >= 0 && y < height);
-
+  /* Code */
+  
   rowstride = gdk_pixbuf_get_rowstride (pixbuf);
   pixels = gdk_pixbuf_get_pixels (pixbuf);
 
@@ -136,11 +131,12 @@ void  Global_putPixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green
 
 /**
  * A function to transform an array of guchar to a pixbuf
- * @param *src The image source
- * @param *dst The initialized pixbuf destination
+ * @param *src the source image
+ * @param *dst the initialized pixbuf destination
  */
 void  Global_gucharToGdkPixbuf (guchar *src, GdkPixbuf *dst)
 {
+  /* Variables and pre-cond */
   guint width, height, n_channels, bytesPerPixel;
   guint x=0;
   guint y=0;
@@ -153,7 +149,7 @@ void  Global_gucharToGdkPixbuf (guchar *src, GdkPixbuf *dst)
   g_assert (gdk_pixbuf_get_bits_per_sample (dst) == 8);
   g_assert (!gdk_pixbuf_get_has_alpha (dst));
   g_assert (n_channels == 3);
-
+  /* Code */
   width = gdk_pixbuf_get_width(dst);
   height = gdk_pixbuf_get_height(dst);
   bytesPerPixel = gdk_pixbuf_get_has_alpha(dst) ? 4 :3;
@@ -170,66 +166,48 @@ void  Global_gucharToGdkPixbuf (guchar *src, GdkPixbuf *dst)
     }
   }
 }
-
   
-
 /**
- * The function to search and open the modules
- */
-void  Global_loadModulesDir ()
+   * A function to get the next image of the storage class
+   */
+GdkPixbuf*  Global_getPixbufFromStorage ()
 {
-  Global   *this = Global_get();
-  GDir    *dir=NULL;
-  GModule *module;
-  G_CONST_RETURN gchar* file = NULL;
-
-  g_return_if_fail(g_module_supported());
-  g_return_if_fail(this != NULL);
-  g_return_if_fail(g_file_test(this->modulesPath,G_FILE_TEST_IS_DIR));
-
-  dir = g_dir_open(this->modulesPath, 0, NULL);
-  g_return_if_fail(dir != NULL);
-  file = g_dir_read_name(dir);
-  while(file != NULL)  {
-    gchar *path = g_module_build_path(this->modulesPath,file);
-    if(! g_file_test(path, G_FILE_TEST_IS_SYMLINK | G_FILE_TEST_IS_DIR)) {
-      module = g_module_open(path, G_MODULE_BIND_MASK);
-      if(module != NULL) {
-	gchar* name = strdup(file);
-	g_message("name:%s",name);
-	this->modulesNames = g_slist_append(this->modulesNames,name);
-	this->modules = g_slist_append(this->modules,module);
-      }
-      g_free(path);
-    }
-    file = g_dir_read_name(dir);
+/* Variables and pre-cond */
+  guint width;
+  guint height;
+  guint bytesPerPixel;
+  guchar *tampon;
+  GdkPixbuf *pixbuf = NULL;
+  Global *global = Global_get();
+  Storage *storage = global->storage;
+  g_return_val_if_fail(storage != NULL, NULL);
+  /* Code */
+  if(! Storage_isLoaded(storage)) {
+    g_return_val_if_fail(Storage_load(storage), NULL);
   }
-  g_dir_close(dir);
-}
+  Storage_getInfos(storage, &width, &height, &bytesPerPixel,NULL);
+  tampon = (guchar*) g_malloc(sizeof(guchar)*width*height*bytesPerPixel);
 
-  
-
-/**
- * Store the webcam
- * @param *webcam The webcam to store
- */
-void  Global_setWebcam (Webcam *webcam)
-{
-  Global *this = Global_get();
-  if(this->webcam != NULL) {
-    (this->webcam)->close(this->webcam);
+  if(Storage_get(storage,tampon)) {
+    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
+			    FALSE,
+			    8,
+			    width,
+			    height);
+    Global_gucharToGdkPixbuf(tampon,pixbuf);
   }
-  this->webcam = webcam;
+  g_free(tampon);
+  return pixbuf;
 }
-
-  
 
 /**
  * Store the imageAnalyse
- * @param imageAnalyse The ImageAnalyse to store
+ * @param *imageAnalyse the ImageAnalyse to store
  */
 void  Global_setImageAnalyse (ImageAnalyse *imageAnalyse)
 {
+  /* Variables and pre-cond */
+  /* Code */
   Global *this = Global_get();
   if(this->imageAnalyse != NULL) {
     ImageAnalyse_destroy(this->imageAnalyse);
@@ -241,10 +219,12 @@ void  Global_setImageAnalyse (ImageAnalyse *imageAnalyse)
 
 /**
  * Store the perspectiveCreator
- * @param *perspectiveCreator The perspectiveCreator to store
+ * @param *perspectiveCreator the perspectiveCreator to store
  */
 void  Global_setPerspectiveCreator (PerspectiveCreator *perspectiveCreator)
 {
+  /* Variables and pre-cond */
+  /* Code */
   Global *this = Global_get();
   if(this->perspectiveCreator != NULL) {
     PerspectiveCreator_destroy(this->perspectiveCreator);
@@ -256,10 +236,12 @@ void  Global_setPerspectiveCreator (PerspectiveCreator *perspectiveCreator)
 
 /**
  * Store the collector
- * @param *collector The collector to store
+ * @param *collector the collector to store
  */
 void  Global_setCollector (Collector *collector)
 {
+  /* Variables and pre-cond */
+  /* Code */
   Global *this = Global_get();
   if(this->collector != NULL) {
     Collector_destroy(this->collector);
@@ -267,12 +249,16 @@ void  Global_setCollector (Collector *collector)
   this->collector = collector;
 }
 
+  
+
 /**
  * Store the storage object
- * @param *storage The storage to be stored
+ * @param *storage the storage to be stored
  */
 void  Global_setStorage (Storage *storage)
 {
+  /* Variables and pre-cond */
+  /* Code */
   Global *this = Global_get();
   if(this->storage != NULL) {
     Storage_destroy(this->storage);
@@ -280,16 +266,19 @@ void  Global_setStorage (Storage *storage)
   this->storage = storage;
 }
 
+  
+
 /**
  * Add the label to the last page
- * @param *str The label of the last page
+ * @param *str the label of the last page
  */
 void  Global_setLabel (const gchar *str)
 {
+  /* Variables and pre-cond */
   GtkWidget *lbl;
   Global   *this = Global_get();
   g_return_if_fail(GTK_IS_NOTEBOOK(this->parent));
-  
+  /* Code */
   lbl = gtk_label_new (str);
   gtk_widget_show (lbl);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (this->parent), gtk_notebook_get_nth_page (GTK_NOTEBOOK (this->parent), -1), lbl);

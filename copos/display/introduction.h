@@ -1,19 +1,9 @@
-/************************************************************************
-* Fichier          : introduction.h
-* Date de Creation : mar aoû 10 2004
-* Auteur           : Ronan Billon
-* E-mail           : cirdan@mail.berlios.de
-
-This file was generated on mar aoû 10 2004 at 15:53:53 with umbrello
-**************************************************************************/
-
 #ifndef INTRODUCTION_H
 #define INTRODUCTION_H
 
 #include <gtk/gtk.h>
 #include "global.h"
-#include "choosedevice.h"
-
+#include "display/choosefile.h"
 /**
   * Class Introduction
   * Class presenting the various stages of the scannerisation 
@@ -31,7 +21,7 @@ typedef struct Introduction
   /**
    * A pointer to the next page
    */
-  ChooseDevice *chooseDevice;
+  ChooseFile *chooseFile;
 } Introduction;
 
 

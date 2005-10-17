@@ -1,10 +1,10 @@
 /************************************************************************
 * Fichier          : point3d.c
-* Date de Creation : lun aoû 16 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on lun aoû 16 2004 at 16:14:00 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #include "engine/point3d.h"
@@ -12,7 +12,7 @@ This file was generated on lun aoû 16 2004 at 16:14:00 with umbrello
  * Constructor
  * @param x Coordinate X
  * @param y Coordinate Y
- * @param z Coordinate z
+ * @param z Coordinate Z
  */
 Point3D*  Point3D_new (gdouble x, gdouble y, gdouble z)
 {
@@ -30,7 +30,6 @@ Point3D*  Point3D_new (gdouble x, gdouble y, gdouble z)
 
 /**
  * Destructor
- * @param *this The object to be destroyed
  */
 void  Point3D_destroy (Point3D *this)
 {

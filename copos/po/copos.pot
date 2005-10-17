@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-31 13:10+0200\n"
+"POT-Creation-Date: 2005-10-17 18:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,46 +16,51 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: display/visualization.c:404
+#. Code
+#: display/visualization.c:251
+msgid "Save File"
+msgstr ""
+
+#: display/visualization.c:405
 msgid "Visualization"
 msgstr ""
 
-#: display/generate.c:159
-msgid "Analyze"
+#: display/generate.c:142
+msgid "Computation"
 msgstr ""
 
-#: display/generate.c:169
-msgid "Analyze each image"
+#: display/generate.c:153
+msgid "Analyse each picture"
 msgstr ""
 
-#: display/generate.c:221
+#: display/generate.c:213
 msgid "Please, add a value greater than 0.0"
 msgstr ""
 
-#: display/generate.c:250
-msgid "Normalize the points. That can take time (and freeze the application)"
-msgstr ""
-
-#: display/generate.c:416
+#: display/generate.c:387
 msgid ""
-"Check that the centre of rotation (symbolized by the white line) is "
-"correctly positioned. \n"
-"If it is not the case, start again the preceding stage. "
+"<b>Check</b> that the centre of rotation (symbolized by the white line)\n"
+"is correctly positioned. \n"
+"If it is not the case, start again the preceding stage."
 msgstr ""
 
-#: display/generate.c:443
-msgid "Navigate"
-msgstr ""
-
-#: display/generate.c:470
+#: display/generate.c:403
 msgid "Rotation of the object (in degree)"
 msgstr ""
 
-#: display/generate.c:478
-msgid "Translation of the object"
+#: display/generate.c:412
+msgid "Translation of the object (in centimeter)"
 msgstr ""
 
-#: display/generate.c:520 display/generate.c:546
+#: display/generate.c:420 display/generate.c:427
+msgid " : "
+msgstr ""
+
+#: display/generate.c:439 display/generate.c:446
+msgid "0.0"
+msgstr ""
+
+#: display/generate.c:479
 msgid "Generate"
 msgstr ""
 
@@ -63,174 +68,190 @@ msgstr ""
 msgid "Add the value of the distance between webcam and the laser pointer\n"
 msgstr ""
 
-#: display/positions.c:124
+#: display/positions.c:65
+msgid ""
+"Add the value of the distance between the departure of the laser and the "
+"table\n"
+msgstr ""
+
+#: display/positions.c:72
+msgid "Add the value of the focal distance of the  webcam\n"
+msgstr ""
+
+#: display/positions.c:80
+msgid "Add the value of the angle formed by the webcam\n"
+msgstr ""
+
+#: display/positions.c:142
 msgid ""
 "Check your values,\n"
-"There's a problem during the compute"
+"There's a problem during the computation"
 msgstr ""
 
-#: display/positions.c:237
-msgid "The focal distance of the webcam (in pixels, see documentations) "
+#: display/positions.c:250
+msgid ""
+"The focal distance of the webcam (in pixels, see documentations)\n"
+"300~500 are good values "
 msgstr ""
 
-#: display/positions.c:244
-msgid "Distance between the webcam and the laser pointer"
+#: display/positions.c:257
+msgid ""
+"Distance between the webcam and the laser pointer (in centimeter)\n"
+"10~30 are good values"
 msgstr ""
 
-#: display/positions.c:251
-msgid "The angle formed by the webcam "
+#: display/positions.c:264
+msgid ""
+"The angle formed by the webcam (in degree)\n"
+"20~60 are good values"
 msgstr ""
 
-#: display/positions.c:258
-msgid "Distance between the departure of the laser and the table "
+#: display/positions.c:271
+msgid ""
+"Distance between the departure of the laser and the table (in centimeter)\n"
+"10~60 are good values"
 msgstr ""
 
-#: display/positions.c:271 display/picklaser.c:639 display/recorder.c:391
-#: display/choosedevice.c:271 display/introduction.c:177
-msgid "Next >"
-msgstr ""
-
-#: display/positions.c:284
+#: display/positions.c:297
 msgid "Set the positions"
 msgstr ""
 
-#: display/picklaser.c:521
+#: display/picklaser.c:480
 msgid "Scale : "
 msgstr ""
 
-#: display/picklaser.c:548
+#: display/picklaser.c:507
 msgid "Number of points : "
 msgstr ""
 
-#: display/picklaser.c:552 display/recorder.c:367 display/recorder.c:374
+#: display/picklaser.c:511
 msgid "0"
 msgstr ""
 
-#: display/picklaser.c:569
-msgid "Red : "
+#: display/picklaser.c:528
+msgid "Red"
 msgstr ""
 
-#: display/picklaser.c:576
-msgid "Green : "
+#: display/picklaser.c:535
+msgid "Green "
 msgstr ""
 
-#: display/picklaser.c:583
-msgid "Blue : "
+#: display/picklaser.c:542
+msgid "Blue"
+msgstr ""
+
+#: display/picklaser.c:549 display/picklaser.c:556 display/picklaser.c:563
+#: display/choosefile.c:268 display/choosefile.c:289 display/choosefile.c:310
+msgid ":"
+msgstr ""
+
+#: display/picklaser.c:608
+msgid "Picker"
+msgstr ""
+
+#: display/picklaser.c:620
+msgid "Eliminate outlayers"
 msgstr ""
 
 #: display/picklaser.c:625
-msgid "Pick"
+msgid "Smooth"
 msgstr ""
 
-#: display/picklaser.c:689
+#: display/picklaser.c:693
 msgid "Pick the laser"
 msgstr ""
 
-#: display/recorder.c:131
-msgid "Couldn't stop the function recorder_update_image"
+#: display/choosefile.c:88
+msgid "Open File"
 msgstr ""
 
-#: display/recorder.c:161
-msgid "Couldn't stop the function recorder_store_image"
+#: display/choosefile.c:226
+msgid "Browse..."
 msgstr ""
 
-#: display/recorder.c:187 display/recorder.c:242 display/choosedevice.c:98
-#: display/choosedevice.c:141 display/choosedevice.c:185
-msgid "Couldn't stop the function update_image"
+#: display/choosefile.c:232
+msgid "<b>Choose video file</b>"
 msgstr ""
 
-#: display/recorder.c:325 display/recorder.c:409
-msgid "Record"
+#: display/choosefile.c:254
+msgid "Size"
 msgstr ""
 
-#: display/recorder.c:330
-msgid "Stop"
+#: display/choosefile.c:261
+msgid "Number of images"
 msgstr ""
 
-#: display/recorder.c:345
-msgid "secondes (recording time)"
+#: display/choosefile.c:296
+msgid "Video"
 msgstr ""
 
-#: display/recorder.c:353
-msgid "Number of frames per seconds :"
+#: display/choosefile.c:317
+msgid "<b>Video informations</b>"
 msgstr ""
 
-#: display/recorder.c:360
-msgid "Number of recorded frames : "
+#: display/choosefile.c:332
+msgid "Change the orientation"
 msgstr ""
 
-#: display/choosemodule.c:25
-msgid "getWebcam is not provided in the module"
+#: display/choosefile.c:337
+msgid "<b>Orientation</b>"
 msgstr ""
 
-#: display/choosemodule.c:34
-msgid "Impossible to initialize the webcam"
+#: display/choosefile.c:372
+msgid "Choose File"
 msgstr ""
 
-#: display/choosemodule.c:40
-msgid "Impossible to use the webcam"
-msgstr ""
-
-#: display/choosemodule.c:130
-msgid "Select the device"
-msgstr ""
-
-#: display/choosemodule.c:166
-msgid "Browse"
-msgstr ""
-
-#: display/choosemodule.c:170
-msgid "Device : "
-msgstr ""
-
-#: display/choosemodule.c:177
-msgid "Module : "
-msgstr ""
-
-#: display/choosemodule.c:211
-msgid "Error during the selection"
-msgstr ""
-
-#: display/choosemodule.c:252
-msgid "getGtkConf is not provided in the module"
-msgstr ""
-
-#: display/choosedevice.c:102
-msgid "Beware no webcam selected"
-msgstr ""
-
-#: display/choosedevice.c:251
-msgid "Device..."
-msgstr ""
-
-#: display/choosedevice.c:256
-msgid "Configuration..."
-msgstr ""
-
-#: display/choosedevice.c:290
-msgid "Choose device"
-msgstr ""
-
-#: display/introduction.c:53
+#: display/introduction.c:44
 msgid "The cheapest 3D Scanner !\n"
 msgstr ""
 
-#: display/introduction.c:185
+#: display/introduction.c:45
+msgid ""
+"The next steps are :\n"
+"-Choose a video file\n"
+"-Select the laser on picture\n"
+"-Enter the position of each piece in the real world\n"
+"-Check out if these values are correct\n"
+"-Enter the last value and generate the cloud of points\n"
+"-Visualize the result and save it\n"
+"\n"
+"Ok now, click on the forward button"
+msgstr ""
+
+#: display/introduction.c:182
 msgid "Introduction"
 msgstr ""
 
-#: display/mainwindow.c:99
-msgid "Copos"
+#: display/mainwindow.c:42
+msgid "About COPOS"
 msgstr ""
 
-#: display/mainwindow.c:110
+#: display/mainwindow.c:57
+msgid ""
+"<b>COPOS</b>\n"
+"An analyser of video file to make a cloud of 3D points"
+msgstr ""
+
+#: display/mainwindow.c:73
+msgid ""
+"Version: 0.8:q\n"
+"Author: Ronan Billon <cirdan@mail.berlios.de>\n"
+"License: GNU General Public License\n"
+"Homepage: http://copos.berlios.de"
+msgstr ""
+
+#: display/mainwindow.c:140
+msgid "copos"
+msgstr ""
+
+#: display/mainwindow.c:151
 msgid "_File"
 msgstr ""
 
-#: display/mainwindow.c:130
+#: display/mainwindow.c:171
 msgid "_Help"
 msgstr ""
 
-#: display/mainwindow.c:137
+#: display/mainwindow.c:178
 msgid "_About"
 msgstr ""

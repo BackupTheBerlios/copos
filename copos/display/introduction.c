@@ -1,12 +1,3 @@
-/************************************************************************
-* Fichier          : introduction.c
-* Date de Creation : mar aoû 10 2004
-* Auteur           : Ronan Billon
-* E-mail           : cirdan@mail.berlios.de
-
-This file was generated on mar aoû 10 2004 at 15:53:53 with umbrello
-**************************************************************************/
-
 #include "display/introduction.h"
 
 /* Load different style for the text */
@@ -51,26 +42,28 @@ static void insert_text (GtkTextBuffer *buffer)
   gtk_text_buffer_get_iter_at_offset (buffer, &iter, 0);
 
   gtk_text_buffer_insert_with_tags_by_name (buffer, &iter, _("The cheapest 3D Scanner !\n"), -1, "heading", "wide_margins", "big_gap_before_line", NULL);
-  gtk_text_buffer_insert_with_tags_by_name (buffer, &iter, "The next steps are :\n...\n...\nOk now, click on the next button", -1, "wide_margins", NULL);
-
+  gtk_text_buffer_insert_with_tags_by_name (buffer, &iter, _("The next steps are :\n-Choose a video file\n-Select the laser on picture\n-Enter the position of each piece in the real world\n-Check out if these values are correct\n-Enter the last value and generate the cloud of points\n-Visualize the result and save it\n\nOk now, click on the forward button"), -1, "wide_margins", NULL);
   gtk_text_buffer_get_bounds (buffer, &start, &end);
   gtk_text_buffer_apply_tag_by_name (buffer, "word_wrap", &start, &end);
 }
 
-static void on_btn_next_clicked(GtkButton       *button,
-			 gpointer         user_data)
+
+
+static void
+on_btn_forward_clicked                 (GtkButton       *button,
+                                        gpointer         user_data)
 {
+  /* Variables and pre-cond */
   Introduction *this;
   g_return_if_fail(GTK_IS_BUTTON(button));
   g_return_if_fail(user_data != NULL);
   this = (Introduction*) user_data;
-
-  /* (Re)Load the next page */
-  if(ChooseDevice_isDisplayed(this->chooseDevice)) {
-    ChooseDevice_destroy(this->chooseDevice);
+  /* Code */
+  if(ChooseFile_isDisplayed(this->chooseFile)) {
+    ChooseFile_destroy(this->chooseFile);
   }
-  this->chooseDevice = ChooseDevice_new();
-  ChooseDevice_presentation(this->chooseDevice);
+  this->chooseFile = ChooseFile_new();
+  ChooseFile_presentation(this->chooseFile);
 }
 
 
@@ -83,7 +76,7 @@ Introduction*  Introduction_new ()
   Introduction* ret = (Introduction*) g_malloc(sizeof(Introduction));
   /* Code */
   ret->mainWidget = NULL;
-  ret->chooseDevice = NULL;
+  ret->chooseFile = NULL;
   return ret;
 }
 
@@ -101,8 +94,8 @@ void  Introduction_destroy (Introduction *this)
   if(Introduction_isDisplayed(this)) {
     gtk_widget_destroy(this->mainWidget);
   }
-  if(this->chooseDevice != NULL) {
-    ChooseDevice_destroy(this->chooseDevice);
+  if(this->chooseFile != NULL) {
+    ChooseFile_destroy(this->chooseFile);
   }
   g_free(this);
 }
@@ -141,11 +134,12 @@ void  Introduction_presentation (Introduction *this)
   GtkWidget *txv_introduction;
   GtkWidget *hsp_introduction;
   GtkWidget *hbb_introduction;
-  GtkWidget *btn_next;
+  GtkWidget *btn_forward;
   GtkTextBuffer *txb_introduction;
   Global *global = Global_get();
   g_return_if_fail(GTK_IS_CONTAINER(global->parent));
   /* Code */
+
   this->mainWidget = gtk_vbox_new (FALSE, 0);
   gtk_widget_show (this->mainWidget);
   gtk_container_add (GTK_CONTAINER (global->parent), this->mainWidget);
@@ -154,11 +148,13 @@ void  Introduction_presentation (Introduction *this)
   gtk_widget_show (scw_introduction);
   gtk_box_pack_start (GTK_BOX (this->mainWidget), scw_introduction, TRUE, TRUE, 0);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scw_introduction), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
-
+  
   txv_introduction = gtk_text_view_new ();
   gtk_widget_show (txv_introduction);
   gtk_container_add (GTK_CONTAINER (scw_introduction), txv_introduction);
-
+  gtk_text_view_set_editable (GTK_TEXT_VIEW (txv_introduction), FALSE);
+  gtk_text_view_set_accepts_tab (GTK_TEXT_VIEW (txv_introduction), FALSE);
+  gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (txv_introduction), FALSE);
   txb_introduction = gtk_text_view_get_buffer (GTK_TEXT_VIEW (txv_introduction));
   /* Add the text with the static functions */
   create_tags (txb_introduction);
@@ -166,7 +162,7 @@ void  Introduction_presentation (Introduction *this)
 
   hsp_introduction = gtk_hseparator_new ();
   gtk_widget_show (hsp_introduction);
-  gtk_box_pack_start (GTK_BOX (this->mainWidget), hsp_introduction, FALSE, FALSE, 5);
+  gtk_box_pack_start (GTK_BOX (this->mainWidget), hsp_introduction, FALSE, FALSE, 0);
 
   hbb_introduction = gtk_hbutton_box_new ();
   gtk_widget_show (hbb_introduction);
@@ -174,16 +170,14 @@ void  Introduction_presentation (Introduction *this)
   gtk_container_set_border_width (GTK_CONTAINER (hbb_introduction), 5);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbb_introduction), GTK_BUTTONBOX_END);
 
-  btn_next = gtk_button_new_with_mnemonic (_("Next >"));
-  gtk_widget_show (btn_next);
-  gtk_container_add (GTK_CONTAINER (hbb_introduction), btn_next);
-  GTK_WIDGET_SET_FLAGS (btn_next, GTK_CAN_DEFAULT);
+  btn_forward = gtk_button_new_from_stock ("gtk-go-forward");
+  gtk_widget_show (btn_forward);
+  gtk_container_add (GTK_CONTAINER (hbb_introduction), btn_forward);
+  GTK_WIDGET_SET_FLAGS (btn_forward, GTK_CAN_DEFAULT);
 
-  g_signal_connect ((gpointer) btn_next, "clicked",
-                    G_CALLBACK (on_btn_next_clicked),
+  g_signal_connect ((gpointer) btn_forward, "clicked",
+                    G_CALLBACK (on_btn_forward_clicked),
                     this);
+
   Global_setLabel(_("Introduction"));
 }
-
-  
-

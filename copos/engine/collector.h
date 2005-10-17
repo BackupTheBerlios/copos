@@ -1,10 +1,10 @@
 /************************************************************************
 * Fichier          : collector.h
-* Date de Creation : lun aoû 16 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on lun aoû 16 2004 at 16:14:00 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #ifndef COLLECTOR_H
@@ -15,11 +15,9 @@ This file was generated on lun aoû 16 2004 at 16:14:00 with umbrello
 #include "engine/imageanalyse.h"
 #include "engine/perspectivecreator.h"
 #include "engine/matrix.h"
-
 /**
   * Class Collector
-  * a class which collects the data of all the others to create the a cloud of 3D points
-  * 
+  * A class which collects the data of all the others to create the cloud of 3D points
   * 
   */
 typedef struct Collector
@@ -32,25 +30,21 @@ typedef struct Collector
    */
    Storage *storage;
   /**
-   * The matrix to compute the position of the next points
+   * The object to analyse each image
    */
-   Matrix *mat;
+   ImageAnalyse *imageAnalyse;
   /**
-   * The resulted cloud of points
+   * The object to transform a 2D point to 3D point
+   */
+   PerspectiveCreator *perspectiveCreator;
+  /**
+   *  The computed cloud of points
    */
    GSList *points;
   /**
-   * The point of the rotation center
+   * each lines of the object
    */
-   Point3D *rotCenter;
-  /**
-   * The angle of the rotation of the object between two image
-   */
-   gdouble rotAngle;
-  /**
-   * The translation of the scanned object between two image
-   */
-   gdouble transDistance;
+   GSList *lines;
 } Collector;
 
 
@@ -62,50 +56,38 @@ typedef struct Collector
   
   /**
    * Destructor
-   * @param *this The object to be destroy
    */
   void  Collector_destroy (Collector *this);
     
   
   /**
-   * Initialize the object to perform the computation (rotation)
-   * @param *this The object which computes
-   * @param *center The center of the rotation
-   * @param rotation The rotation
-   * @param *storage The storage object to be analyzed
+   * Initialize the object to perform the Collector computation
+   * @param *imageAnalyse the analyser of image
+   * @param *perspectiveCreator the perspective creator
+   * @param *storage The storage of images
    */
-  void  Collector_beginRot (Collector *this, Point3D *center, gdouble rotation, Storage *storage);
-    
-  
-  /**
-   * Initialize the object to perform the computation (translation)
-   * @param *this The object which computes
-   * @param translation The translation
-   * @param *storage The storage object to be analyzed
-   */
-  void  Collector_beginTrans (Collector *this, gdouble translation, Storage *storage);
-    
-  
+  void  Collector_begin (Collector *this, 
+			 ImageAnalyse *imageAnalyse, 
+			 PerspectiveCreator *perspectiveCreator,
+			 Storage *storage);
   /**
    * One step of the computation
-   * @param *this The object which computes
-   * @param *imageAnalyse The analyser of image
-   * @param *perspectiveCreator The perspective creator
    */
-  gboolean  Collector_iteration (Collector *this, ImageAnalyse *imageAnalyse, PerspectiveCreator *perspectiveCreator);
+  gboolean  Collector_iteration (Collector *this);
     
   
   /**
-   * Terminate the computation and normalize all the points
-   * @param *this The object which compute
+   * Terminate the computation and normalize all the points (Rotation mode)
    */
-  void  Collector_end (Collector *this);
+  void  Collector_endRotation (Collector *this, const Point3D *center, gdouble rotation);
     
-  
+  /**
+   * Terminate the computation and normalize all the points (Translation mode)
+   */
+  void  Collector_endTranslation (Collector *this, gdouble translation);
   /**
    * Save the result in a file
-   * @param *this The object to be saved
-   * @param *filename The filename where this object will be saved
+   * @param *filename the filename where this object will be saved
    */
   void  Collector_save (Collector *this, const gchar *filename);
     

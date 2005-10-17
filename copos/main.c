@@ -1,7 +1,7 @@
-/* Fichier          : /home/bug/projet/Copos/src/main.c		*/
-/* Date de Creation : 31/08/2004			*/
+/* Fichier          : /home/bug/projet/copos2/src/main.c		*/
+/* Date de Creation : 07/10/2005			*/
 /* Auteur           : Ronan Billon			*/
-/* E-mail           : cirdan@mail.berlios.de		*/
+/* E-mail           : r.billon@caramail.com		*/
 /* Commentaires     : 				*/
 
 #include <stdlib.h>
@@ -23,11 +23,9 @@ int main(int argc, char *argv[])
   gtk_init (&argc, &argv);
   gtk_gl_init (&argc, &argv);
 
-  Global_loadModulesDir();
   MainWindow_presentation(mainWin);
   gtk_main();
   MainWindow_destroy(mainWin);
   Global_destroy();
-
   return EXIT_SUCCESS;
 }

@@ -1,23 +1,14 @@
-/************************************************************************
-* Fichier          : picklaser.h
-* Date de Creation : jeu aoû 12 2004
-* Auteur           : Ronan Billon
-* E-mail           : cirdan@mail.berlios.de
-
-This file was generated on jeu aoû 12 2004 at 12:03:33 with umbrello
-**************************************************************************/
-
 #ifndef PICKLASER_H
 #define PICKLASER_H
 
 #include <gtk/gtk.h>
-#include "engine/imageanalyse.h"
 #include "global.h"
-#include "positions.h"
-
+#include "engine/storage.h"
+#include "engine/imageanalyse.h"
+#include "display/positions.h"
 /**
   * Class PickLaser
-  * Class allowing the selection of the laser on the images 
+  * Class to select the appropriate video file and display information
   * 
   */
 typedef struct PickLaser
@@ -40,15 +31,11 @@ typedef struct PickLaser
   /**
    * Store the original image
    */
-   GdkPixbuf *pixbuf;
+   GdkPixbuf *pixbuf;  
   /**
    * the scale of the image in percent
    */
    gdouble scale;
-  /**
-   * An handler of the cursor (change over the image)
-   */
-   GdkCursor *cursor;
   /**
    * Variable to test if the user have clicked on the horizontal scroller
    */
@@ -70,9 +57,13 @@ typedef struct PickLaser
    */
    GtkWidget *lbl_nbPoints;
   /**
-   * The next page
+   * An handler of the cursor (change over the image)
    */
-   Positions *positions;
+   GdkCursor *cursor;
+  /**
+   * A pointer to the next page
+   */
+  Positions *positions;
 } PickLaser;
 
 
@@ -84,7 +75,7 @@ typedef struct PickLaser
   
   /**
    * Destructor
-   * @param *this The object to destroy
+   * @param *this The object to be destroy
    */
   void  PickLaser_destroy (PickLaser *this);
     

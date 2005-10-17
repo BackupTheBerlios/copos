@@ -1,25 +1,24 @@
 /************************************************************************
 * Fichier          : storage.h
-* Date de Creation : mar aoû 10 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on mar aoû 10 2004 at 15:53:53 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #ifndef STORAGE_H
 #define STORAGE_H
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <glib.h>
-
-#define TMP_STORAGE "/tmp/coposXXXXXX"
+#include <ffmpeg/avcodec.h>
+#include <ffmpeg/avformat.h>
 
 /**
   * Class Storage
-  * A class which manages the temporary files of images 
+  * A class which manages the  video files (with ffmpeg)
   * 
   */
 typedef struct Storage
@@ -28,116 +27,90 @@ typedef struct Storage
    * Fields
    */
   /**
-   * A pointer on the open file
-   */
-   FILE *file;
-  /**
-   * The path of the temporary file
+   * The path of the video file
    */
    gchar *filename;
   /**
-   * The width of each picture
-   */
-   guint width;
-  /**
-   * The height of each picture
-   */
-   guint height;
-  /**
-   * The number of bytes per pixel for each image
-   */
-   guint bytesPerPixel;
-  /**
-   * The number of recorded images
+   * number of pictures of the video (approximately)
    */
    guint nbImages;
+  /**
+   * pointer to the format context of the video
+   */
+   AVFormatContext *formatCtx;
+  /**
+   * pointer to the codec context of the video
+   */
+   AVCodecContext *codecCtx;
+  /**
+   * the index of the first video stream
+   */
+   gint streamIndex;
+  /**
+   * the name of the codec to read this video
+   */
+   gchar *codecName;
+  /**
+   * A field to change the orientation of the video
+   */
+  gboolean hasChangedOrientation;
+
 } Storage;
 
 
   /**
-   * The constructor
+   * Constructor
    */
   Storage*  Storage_new ();
     
   
   /**
-   * Destroy the object
-   * @param *this The object to be destroy
+   * Destructor
    */
   void  Storage_destroy (Storage *this);
     
   
   /**
-   * Open a temporary file to store the images (it closes and destroy the previous one if it exists)
-   * @param *this The objet to start the record
-   * @param width The width of image (will be used as verificator) 
-   * @param height The height of image (will be used as verificator) 
-   * @param bytesPerPixel The number of bytes per pixel of image (will be used as verificator) 
+   * Set the path to the video file
+   * @param *filename the path to the video file
    */
-  void  Storage_record (Storage *this, guint width, guint height, guint bytesPerPixel);
-    
-  
-  /**
-   * Add the image to the file
-   * @param *this The object of storage
-   * @param width The width of image
-   * @param height The height of image
-   * @param BytesPerPixel The number of bytes per pixel
-   * @param *image The image to be stored
-   */
-  void  Storage_put (Storage *this, guint width, guint height, guint bytesPerPixel, guchar *image);
+  void  Storage_setFileName (Storage *this, const gchar *filename);
     
   
   /**
    * Return all the informations about each image
-   * @param *this The object which gives informations
-   * @param *width Pointer which will contain the width 
-   * @param *height Pointer which will contain the height 
-   * @param *bytesPerPixels Pointer which will contain the number of bytes per pixel
+   * @param *width pointer which receive the width 
+   * @param *height pointer which receive the height
+   * @param *bytesPerPixel pointer which receive the number of bytes per pixel
    */
-  void  Storage_getInfos (Storage *this, guint *width, guint *height, guint *bytesPerPixel);
+  void  Storage_getInfos (Storage *this, guint *width, guint *height, guint *bytesPerPixel, gchar *codecName);
     
   
   /**
-   * Begin the reading of the preceding recorded file (start)
-   * @param *this The object which contains images
+   * Begin the loading of the video file
    */
-  void  Storage_readBegin (Storage *this);
-    
-  
-  /**
-   * Begin the reading of the preceding recorded file (end)
-   * @param *this The object which contains the images
-   */
-  void  Storage_readEnd (Storage *this);
+  gboolean  Storage_load (Storage *this);
     
   
   /**
    * Return the current image and select the next
-   * @param *this The object which return the current image
-   * @param *image The returned image (must be initialized)
+   * @param *image the returned Storage_image (Storage *this, must be initialized)
    */
   gboolean  Storage_get (Storage *this, guchar *image);
     
-  
   /**
-   * Return the current image and select the previous
-   * @param *this The object
-   * @param *image The returned image (must be initialized)
+   * Seek to a frame
+   * @param pos pourcentage position of frame in total timeline
    */
-  gboolean  Storage_getReverse (Storage *this, guchar *image);
+  gboolean  Storage_seek (Storage *this, guint pos);
+  /**
+   * Test if the object is loaded
+   */
+  gboolean  Storage_isLoaded (Storage *this);
     
   
   /**
-   * Test if the object is on reading or recording
-   * @param *this The object to be tested
-   */
-  gboolean  Storage_isOpen (Storage *this);
-    
-  
-  /**
-   * Stop the recording or reading and close the file
-   * @param *this The object to be closed
+   * Stop the reading and close the video file
    */
   void  Storage_close (Storage *this);
     

@@ -1,10 +1,10 @@
 /************************************************************************
 * Fichier          : perspectivecreator.h
-* Date de Creation : lun aoû 16 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on lun aoû 16 2004 at 16:14:00 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #ifndef PERSPECTIVECREATOR_H
@@ -16,7 +16,8 @@ This file was generated on lun aoû 16 2004 at 16:14:00 with umbrello
 
 /**
   * Class PerspectiveCreator
-  * A class which allows the projection in 3d with the data of the webcam and other parameters
+  * A class which allows the projection in 3d with the data of the webcam
+  *  and other parameters
   * 
   */
 typedef struct PerspectiveCreator
@@ -33,7 +34,11 @@ typedef struct PerspectiveCreator
    */
    gdouble distCamera;
   /**
-   * The angle between camera and the start of the laser
+   * The distance between the start of the laser and the center of object
+   */
+   gdouble distCenter;
+  /**
+   * The angle between camera and the start of the laser (see picture)
    */
    gdouble angleCamera;
   /**
@@ -44,6 +49,7 @@ typedef struct PerspectiveCreator
    * The height of the CCD
    */
    guint CCDheight;
+  
 } PerspectiveCreator;
 
 
@@ -55,39 +61,28 @@ typedef struct PerspectiveCreator
   
   /**
    * Destructor
-   * @param *this The object to be destroyed
    */
   void  PerspectiveCreator_destroy (PerspectiveCreator *this);
     
   
   /**
    * Computation of a 3D profile starting from a set of 2D points
-   * @param *this The object which perform the computation
-   * @param *points2D The 2D points to be projected in 3d 
+   * @param *points2D the 2D points to be projected in 3d 
    */
   GSList*  PerspectiveCreator_compute (PerspectiveCreator *this, GSList *points2D);
     
   
   /**
-   * Computation of a 3D profile starting from a set of 2D points (this function tries to smooth the result)
-   * @param *this The object which perform the computation
-   * @param *points2D The 2D points to be projected in 3D
-   */
-  GSList*  PerspectiveCreator_computeSmooth (PerspectiveCreator *this, GSList *points2D);
-    
-  
-  /**
-   * It creates a 3D point from a 2D point of the picture (don't forget to free the new point)
-   * @param *this The object which perform the computation
+   * It creates a 3D point from a 2D point of the PerspectiveCreator_picture (PerspectiveCreator *this, don't forget to free 
+   * the new point)
    * @param *pt The point to be transformed
    */
   Point3D*  PerspectiveCreator_pixelToReal (PerspectiveCreator *this, Point2D *pt);
     
   
   /**
-   * It creates a 2D point from a 3D point (don't forget to free the new point)
-   * @param *this The object which perform the computation
-   * @param *pt The object to be transformed
+   * It creates a 2D point from a 3D PerspectiveCreator_point (PerspectiveCreator *this, don't forget to free the new point)
+   * @param *pt the 3D point to be transformed
    */
   Point2D*  PerspectiveCreator_realToPixel (PerspectiveCreator *this, Point3D *pt);
     

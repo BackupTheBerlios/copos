@@ -62,14 +62,14 @@ checkEntry                             (Positions *this,
   }
   str = gtk_entry_get_text(GTK_ENTRY(this->ent_distCenter));
   if(strcmp(str,"") == 0) {
-    err = g_string_append(err,"Add the value of the distance between the departure of the laser and the table\n");
+    err = g_string_append(err,_("Add the value of the distance between the departure of the laser and the table\n"));
   }
   else {
     *distCenter = g_strtod(gtk_entry_get_text(GTK_ENTRY(this->ent_distCenter)),NULL);
   }
   str = gtk_entry_get_text(GTK_ENTRY(this->ent_focal));
   if(strcmp(str,"") == 0) {
-    err = g_string_append(err,"Add the value of the focal distance of the  webcam\n");
+    err = g_string_append(err,_("Add the value of the focal distance of the  webcam\n"));
   }
   else {
     *focal = (guint) g_strtod(gtk_entry_get_text(GTK_ENTRY(this->ent_focal)),NULL);
@@ -77,7 +77,7 @@ checkEntry                             (Positions *this,
 
   str = gtk_entry_get_text(GTK_ENTRY(this->ent_angle));
   if(strcmp(str,"") == 0) {
-    err = g_string_append(err,"Add the value of the angle formed by the webcam\n");
+    err = g_string_append(err,_("Add the value of the angle formed by the webcam\n"));
   }
   else {
     *angleCamera = g_strtod(gtk_entry_get_text(GTK_ENTRY(this->ent_angle)),NULL);
@@ -92,7 +92,7 @@ checkEntry                             (Positions *this,
 }
 
 static void
-on_btn_next_clicked                    (GtkButton       *button,
+on_btn_forward_clicked                 (GtkButton       *button,
                                         gpointer         user_data)
 {
   /* Variables and pre-cond */
@@ -101,30 +101,48 @@ on_btn_next_clicked                    (GtkButton       *button,
   gdouble angleCamera = 0.0;
   gdouble distCenter = 0.0;
   Positions *this;
+  Global *global = Global_get();
   g_return_if_fail(GTK_IS_BUTTON(button));
   g_return_if_fail(user_data != NULL);
+  g_return_if_fail(global->storage != NULL);
   this = (Positions*) user_data;
   /* Code */
   if(! checkEntry(this,&focal,&distCamera,&angleCamera,&distCenter)) {
     return;
   }
   else {
+    Point2D *pt2D = NULL;
+    Point3D *pt3D = Point3D_new(0.0, 0.0, distCenter);
     PerspectiveCreator *perspectiveCreator = PerspectiveCreator_new();
     perspectiveCreator->focal = focal;
     perspectiveCreator->distCamera = distCamera;
     perspectiveCreator->angleCamera = angleCamera;
-    Global_setPerspectiveCreator(perspectiveCreator);
+    perspectiveCreator->distCenter = distCenter;
 
-    if(Generate_isDisplayed(this->generate)) {
-      Generate_destroy(this->generate);
-      this->generate = NULL;
+    if(! Storage_isLoaded(global->storage)) {
+      g_return_if_fail(Storage_load(global->storage));
     }
-    this->generate = Generate_new(distCenter);
-    if(this->generate == NULL) {
-      Global_errMessage(_("Check your values,\nThere's a problem during the compute"));
-      return;
+    Storage_getInfos(global->storage, 
+		     &perspectiveCreator->CCDwidth, 
+		     &perspectiveCreator->CCDheight, 
+		     NULL, NULL);
+    pt2D =  PerspectiveCreator_realToPixel(perspectiveCreator, pt3D);
+    if(pt2D != NULL) {
+      Global_setPerspectiveCreator(perspectiveCreator);
+      Point2D_destroy(pt2D);
+      Point3D_destroy(pt3D);
+      if(Generate_isDisplayed(this->generate)) {
+	Generate_destroy(this->generate);
+	this->generate = NULL;
+      }
+      this->generate = Generate_new();
+      Generate_presentation(this->generate);
     }
-    Generate_presentation(this->generate);
+    else {
+      Global_errMessage(_("Check your values,\nThere's a problem during the computation"));
+      Point3D_destroy(pt3D);
+      PerspectiveCreator_destroy(perspectiveCreator);
+    }
   }
 }
 
@@ -203,15 +221,10 @@ gboolean  Positions_isDisplayed (Positions *this)
 void  Positions_presentation (Positions *this)
 {
   /* Variables and pre-cond */
-/*   GtkWidget *mainWidget; */
   GtkWidget *fxd_positions;
-/*   GtkWidget *ent_focal; */
-/*   GtkWidget *ent_distCam; */
-/*   GtkWidget *ent_angle; */
-/*   GtkWidget *ent_distCenter; */
   GtkWidget *hsp_positions;
-  GtkWidget *hbb_next;
-  GtkWidget *btn_next;
+  GtkWidget *hbb_positions;
+  GtkWidget *btn_forward;
   GtkTooltips *tooltips;
   GList    *focusable_widgets = NULL;
   Global *global = Global_get();
@@ -234,28 +247,28 @@ void  Positions_presentation (Positions *this)
   gtk_widget_show (this->ent_focal);
   gtk_fixed_put (GTK_FIXED (fxd_positions), this->ent_focal, 8, 404);
   gtk_widget_set_size_request (this->ent_focal, 80, 21);
-  gtk_tooltips_set_tip (tooltips, this->ent_focal, _("The focal distance of the webcam (in pixels, see documentations) "), NULL);
+  gtk_tooltips_set_tip (tooltips, this->ent_focal, _("The focal distance of the webcam (in pixels, see documentations)\n300~500 are good values "), NULL);
 
   this->ent_distCam = gtk_entry_new ();
   focusable_widgets = g_list_append(focusable_widgets, this->ent_distCam);
   gtk_widget_show (this->ent_distCam);
   gtk_fixed_put (GTK_FIXED (fxd_positions), this->ent_distCam, 175, 375);
   gtk_widget_set_size_request (this->ent_distCam, 80, 21);
-  gtk_tooltips_set_tip (tooltips, this->ent_distCam, _("Distance between the webcam and the laser pointer"), NULL);
+  gtk_tooltips_set_tip (tooltips, this->ent_distCam, _("Distance between the webcam and the laser pointer (in centimeter)\n10~30 are good values"), NULL);
 
   this->ent_angle = gtk_entry_new ();
   focusable_widgets = g_list_append(focusable_widgets, this->ent_angle);
   gtk_widget_show (this->ent_angle);
   gtk_fixed_put (GTK_FIXED (fxd_positions), this->ent_angle, 168, 310);
   gtk_widget_set_size_request (this->ent_angle, 50, 21);
-  gtk_tooltips_set_tip (tooltips, this->ent_angle, _("The angle formed by the webcam "), NULL);
+  gtk_tooltips_set_tip (tooltips, this->ent_angle, _("The angle formed by the webcam (in degree)\n20~60 are good values"), NULL);
 
   this->ent_distCenter = gtk_entry_new ();
   focusable_widgets = g_list_append(focusable_widgets, this->ent_distCenter);
   gtk_widget_show (this->ent_distCenter);
   gtk_fixed_put (GTK_FIXED (fxd_positions), this->ent_distCenter, 335, 230);
   gtk_widget_set_size_request (this->ent_distCenter, 80, 21);
-  gtk_tooltips_set_tip (tooltips, this->ent_distCenter, _("Distance between the departure of the laser and the table "), NULL);
+  gtk_tooltips_set_tip (tooltips, this->ent_distCenter, _("Distance between the departure of the laser and the table (in centimeter)\n10~60 are good values"), NULL);
 
   gtk_container_set_focus_chain(GTK_CONTAINER(fxd_positions), focusable_widgets);
 
@@ -263,22 +276,22 @@ void  Positions_presentation (Positions *this)
   gtk_widget_show (hsp_positions);
   gtk_box_pack_start (GTK_BOX (this->mainWidget), hsp_positions, FALSE, FALSE, 0);
 
-  hbb_next = gtk_hbutton_box_new ();
-  gtk_widget_show (hbb_next);
-  gtk_box_pack_start (GTK_BOX (this->mainWidget), hbb_next, FALSE, FALSE, 0);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (hbb_next), GTK_BUTTONBOX_END);
+  hbb_positions = gtk_hbutton_box_new ();
+  gtk_widget_show (hbb_positions);
+  gtk_box_pack_start (GTK_BOX (this->mainWidget), hbb_positions, FALSE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbb_positions), 5);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (hbb_positions), GTK_BUTTONBOX_END);
 
-  btn_next = gtk_button_new_with_mnemonic (_("Next >"));
-  gtk_widget_show (btn_next);
-  gtk_container_add (GTK_CONTAINER (hbb_next), btn_next);
-  gtk_container_set_border_width (GTK_CONTAINER (btn_next), 5);
-  GTK_WIDGET_SET_FLAGS (btn_next, GTK_CAN_DEFAULT);
+  btn_forward = gtk_button_new_from_stock ("gtk-go-forward");
+  gtk_widget_show (btn_forward);
+  gtk_container_add (GTK_CONTAINER (hbb_positions), btn_forward);
+  GTK_WIDGET_SET_FLAGS (btn_forward, GTK_CAN_DEFAULT);
 
   g_signal_connect ((gpointer) fxd_positions, "expose_event",
                     G_CALLBACK (on_fxd_positions_expose_event),
                     this);
-  g_signal_connect ((gpointer) btn_next, "clicked",
-                    G_CALLBACK (on_btn_next_clicked),
+  g_signal_connect ((gpointer) btn_forward, "clicked",
+                    G_CALLBACK (on_btn_forward_clicked),
                     this);
   
   Global_setLabel(_("Set the positions"));

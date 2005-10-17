@@ -1,17 +1,18 @@
-dnl Process this file with autoconf to produce a configure script.
-
-AC_INIT(global.c)
-AM_INIT_AUTOMAKE(copos, "0.7")
+AC_PREREQ(2.59)
+AC_INIT(copos, 0.8, cirdan@mail.berlios.de)
+AM_INIT_AUTOMAKE(copos, "0.8")
 AM_CONFIG_HEADER(config.h:config.h.in)
 
 dnl Checks for programs.
 AC_PROG_CC
 AM_PROG_CC_STDC
+AC_PROG_MAKE_SET
 AC_CHECK_PROG(HAVE_PKGCONFIG, pkg-config, true, false)
 AC_PROG_INSTALL
 
 dnl Checks for libtool.
 AC_PROG_LIBTOOL
+
 dnl Checks for libraries.
 PKG_CHECK_MODULES(GLIB2, glib-2.0 gobject-2.0 gthread-2.0 gmodule-2.0)
 AC_SUBST(GLIB2_CFLAGS)
@@ -27,6 +28,9 @@ AC_SUBST(GDKPIXBUF_LIBS)
 PKG_CHECK_MODULES(GTKGL, gtkglext-1.0)
 AC_SUBST(GTKGL_CFLAGS)
 AC_SUBST(GTKGL_LIBS)
+
+AC_SEARCH_LIBS(avcodec_init, [avcodec], [], [AC_MSG_ERROR([libavcodec is missing])])
+AC_SEARCH_LIBS(guess_format, [avformat], [], [AC_MSG_ERROR([libavcodec is missing])])
 
 GETTEXT_PACKAGE=copos
 AC_DEFINE([GETTEXT_PACKAGE], "copos", [The Gettext package])
@@ -62,40 +66,11 @@ else
   AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "$PACKAGE_DATA_DIR", [The data dir of the package])
 fi
 
-dnl ##################################################
-dnl # Check for pwc
-dnl ##################################################
-
-AC_ARG_ENABLE([pwc],
-              [AC_HELP_STRING([--disable-pwc],
-                              [disable Philips740K module compilation])], ,
-              [pwc=yes])
-
-AC_ARG_WITH(i_pwc,
-	    [  --include-pwc=DIR       pwc-ioctl.h is installed in DIR [[default=/usr/src/linux/drivers/usb/media/]]],
-	    i_pwc=$withval,
-	    i_pwc="/usr/src/linux/drivers/usb/media/")
-if test x${pwc} = xyes;
-then
-  PWC="YES"
-  AC_CHECK_HEADERS(${i_pwc}/pwc-ioctl.h,PWC_CFLAGS="-I/$i_pwc", AC_MSG_ERROR([Couldn't find pwc-ioctl.h in the directory ${i_pwc} (set --with-pwc=no)]))
-else
-  pwc="no"
-  PWC_CFLAGS=""
-  PWC="NO"
-fi
-AM_CONDITIONAL(TEST_PWC, test x$pwc = xyes)
-AC_SUBST(PWC)
-AC_SUBST(PWC_CFLAGS)
-
-dnl AC_CHECK_HEADERS(${pwc}/pwc-ioctl.h,PWC="-I/$pwc", AC_MSG_ERROR([Couldn't find pwc-ioctl.h in the directory ${pwc}]))
-
-
-
 dnl Checks for header files.
-
 AC_HEADER_STDC
 AC_CHECK_HEADERS(unistd.h)
+AC_CHECK_HEADERS(ffmpeg/avcodec.h)
+AC_CHECK_HEADERS(ffmpeg/avformat.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -103,7 +78,7 @@ AC_C_CONST
 dnl Checks for library functions.
 AC_CHECK_FUNCS(strdup)
 
-AC_OUTPUT(Makefile engine/Makefile display/Makefile plugins/Makefile po/Makefile.in )
+AC_OUTPUT(Makefile engine/Makefile display/Makefile po/Makefile.in )
 
 dnl ##################################################
 dnl # Print summary
@@ -112,9 +87,6 @@ dnl ##################################################
 echo
 echo "         "${BLD_ON}"Copos Configuration Summary"${BLD_OFF}
 echo "===================================================="
-echo
-echo "  Generic Video 4 Linux : by default"
-echo "  Compile Philips740K   : $pwc"
 echo
 echo "  Setup finished. Now run:"
 echo

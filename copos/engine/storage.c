@@ -1,52 +1,56 @@
 /************************************************************************
 * Fichier          : storage.c
-* Date de Creation : mar aoû 10 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on mar aoû 10 2004 at 15:53:53 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #include "engine/storage.h"
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "Storage"
 
+static void convertToRGB24(Storage *this, AVFrame *picture, guchar *image);
+
 /**
- * The constructor
+ * Constructor
  */
 Storage*  Storage_new ()
 {
   /* Variables and pre-cond */
   Storage* ret = (Storage*) g_malloc(sizeof(Storage));
   /* Code */
-  ret->file = NULL;
   ret->filename = NULL;
-  ret->width = 0;
-  ret->height = 0;
-  ret->bytesPerPixel = 0;
   ret->nbImages = 0;
+  ret->formatCtx = NULL;
+  ret->codecCtx = NULL;
+  ret->streamIndex = -1;
+  ret->codecName = NULL;
+  ret->hasChangedOrientation = FALSE;
+  av_register_all(); /* start ffmpeg */
+
   return ret;
 }
 
   
 
 /**
- * Destroy the object
- * @param *this The object to be destroy
+ * Destructor
  */
 void  Storage_destroy (Storage *this)
 {
   /* Variables and pre-cond */
   g_assert(this != NULL);
-
   /* Code */
-  if(this->file != NULL) {
+  if(this->streamIndex != -1) {
     Storage_close(this);
   }
   if(this->filename != NULL) {
-    /* remove the temporary file */
-    g_return_if_fail(remove(this->filename) == 0);
-    g_free(this->filename);
+     g_free(this->filename);
+  }
+  if(this->codecName != NULL) {
+     g_free(this->codecName);
   }
   g_free(this);
 }
@@ -54,212 +58,170 @@ void  Storage_destroy (Storage *this)
   
 
 /**
- * Open a temporary file to store the images (it closes and destroy the previous one if it exists)
- * @param *this The objet to start the record
- * @param width The width of image (will be used as verificator) 
- * @param height The height of image (will be used as verificator) 
- * @param bytesPerPixel The number of bytes per pixel of image (will be used as verificator) 
+ * Set the path to the video file
+ * @param *filename the path to the video file
  */
-void  Storage_record (Storage *this, guint width, guint height, guint bytesPerPixel)
+void  Storage_setFileName (Storage *this, const gchar *filename)
 {
   /* Variables and pre-cond */
-  char filename[] = TMP_STORAGE;  /* Temporary file in /tmp */
-  int  fd;
-
-  g_return_if_fail(this != NULL);
-  g_return_if_fail(width > 0);
-  g_return_if_fail(height > 0);
-  g_return_if_fail(bytesPerPixel > 0);
+  g_assert(this != NULL);
+  g_assert(filename != NULL);
   /* Code */
-  if(this->file != NULL) {
-    Storage_close(this);
-  }
-  if(this->filename != NULL) {
-    g_return_if_fail(remove(this->filename) == 0);
-    g_free(this->filename);
-    this->filename = NULL;
-  }
-  if((fd = g_mkstemp(filename)) < 0){
-    g_warning("mkstemp failed");
-    return;
-  }
-  this->file = fdopen(fd, "wb");
   this->filename = strdup(filename);
-  this->width = width;
-  this->height = height;
-  this->bytesPerPixel = bytesPerPixel;
-}
-
-  
-
-/**
- * Add the image to the file
- * @param *this The object of storage
- * @param width The width of image
- * @param height The height of image
- * @param BytesPerPixel The number of bytes per pixel
- * @param *image The image to be stored
- */
-void  Storage_put (Storage *this, guint width, guint height, guint bytesPerPixel, guchar *image)
-{
-  /* Variables and pre-cond */
-  guint nb = 0;
-  g_return_if_fail(this != NULL);
-  g_return_if_fail(this->file != NULL);
-  g_return_if_fail(width == this->width);
-  g_return_if_fail(height == this->height);
-  g_return_if_fail(bytesPerPixel == this->bytesPerPixel);
-  /* Code */
-  nb = fwrite( image, sizeof(guchar), width*height*bytesPerPixel, this->file);
-  if(nb != (width*height*bytesPerPixel)) {
-    g_warning("Impossible to write in the temporary file");
-  }
-  this->nbImages += 1;
 }
 
   
 
 /**
  * Return all the informations about each image
- * @param *this The object which gives informations
- * @param *width Pointer which will contain the width 
- * @param *height Pointer which will contain the height 
- * @param *bytesPerPixels Pointer which will contain the number of bytes per pixel
+ * @param *width pointer which receive the width 
+ * @param *height pointer which receive the height
+ * @param *bytesPerPixel pointer which receive the number of bytes per pixel
  */
-void  Storage_getInfos (Storage *this, guint *width, guint *height, guint *bytesPerPixel)
+void  Storage_getInfos (Storage *this, guint *width, guint *height, guint *bytesPerPixel, gchar *codecName)
 {
   /* Variables and pre-cond */
   g_return_if_fail(this != NULL);
-  g_return_if_fail(this->file != NULL);
+  g_return_if_fail(this->streamIndex != -1);
   /* Code */
-  if(width != NULL) { *width  = this->width;}
-  if(height != NULL) {*height = this->height;}
-  if(bytesPerPixel != NULL) {*bytesPerPixel = this->bytesPerPixel;}
+  if(width != NULL) { 
+    if(this->hasChangedOrientation) {
+      *width  = this->codecCtx->height;
+    }
+    else {
+      *width  = this->codecCtx->width;
+    }
+  }
+  if(height != NULL) {
+    if(this->hasChangedOrientation) {
+      *height  = this->codecCtx->width;
+    }
+    else {
+      *height = this->codecCtx->height;
+    }
+  }
+  if(bytesPerPixel != NULL) {*bytesPerPixel = 3;} /*3 by default*/
+  if(codecName != NULL) {strcpy(codecName, this->codecName);}
 }
-
-  
+ 
 
 /**
- * Begin the reading of the preceding recorded file (start)
- * @param *this The object which contains images
+ * Begin the loading of the video file
  */
-void  Storage_readBegin (Storage *this)
+gboolean  Storage_load (Storage *this)
 {
   /* Variables and pre-cond */
-  g_return_if_fail(this != NULL);
-  g_return_if_fail(this->filename != NULL);
+  float framerate = 0;
+  guint duration = 0;
+  gint i=0;
+  AVFormatContext *formatCtx = NULL;
+  AVCodecContext *codecCtx;
+  AVCodec *codec;
+  g_return_val_if_fail(this != NULL, FALSE);
   /* Code */
-  if(this->file != NULL) {
+  if(this->streamIndex != -1) {
     Storage_close(this);
   }
-  this->file = fopen(this->filename,"rb");
-}
-
-  
-
-/**
- * Begin the reading of the preceding recorded file (end)
- * @param *this The object which contains the images
- */
-void  Storage_readEnd (Storage *this)
-{
-  /* Variables and pre-cond */
-  g_return_if_fail(this != NULL);
-  g_return_if_fail(this->filename != NULL);
-  /* Code */
-  if(this->file != NULL) {
-    Storage_close(this);
+  /* find the correct format context */
+  if(av_open_input_file(&formatCtx, this->filename, NULL, 0, NULL)!=0) {
+    g_warning("Couldn't open file : %s", this->filename);
+    return FALSE;
   }
-  this->file = fopen(this->filename,"rb");
-  fseek(this->file, 0L, SEEK_END); /* go to the end */
+  if(av_find_stream_info(formatCtx)<0) {
+    g_warning("Couldn't get infos of stream");
+    return FALSE;
+  }
+  for(i=0; i<formatCtx->nb_streams; i++) {
+    if(formatCtx->streams[i]->codec.codec_type==CODEC_TYPE_VIDEO) {
+      this->streamIndex=i;
+      break;
+    }
+  }
+  if(this->streamIndex==-1) {
+    g_warning("Couldn't find a video stream");
+    return FALSE;
+  }
+  this->formatCtx = formatCtx;
+  /* find the correct codec context */
+  codecCtx=&formatCtx->streams[this->streamIndex]->codec;
+  codec=avcodec_find_decoder(codecCtx->codec_id);
+  if(codec==NULL) {
+    g_warning("Couldn't find a codec for the stream");
+    return FALSE;
+  }
+  if(codec->capabilities & CODEC_CAP_TRUNCATED)
+        codecCtx->flags|=CODEC_FLAG_TRUNCATED;
+  if(avcodec_open(codecCtx, codec)<0) {
+    g_warning("Couldn't open the codec");
+    return FALSE;
+  }
+  if(codecCtx->frame_rate>1000 && codecCtx->frame_rate_base==1) {
+    codecCtx->frame_rate_base=1000;
+  }
+  this->codecCtx = codecCtx;
+  /* Compute the approximately number of frame*/
+  framerate = (float)codecCtx->frame_rate / codecCtx->frame_rate_base;
+  duration = formatCtx->duration / AV_TIME_BASE;
+  this->nbImages = duration * framerate;
+  this->codecName = strdup(codec->name);
+
+  return TRUE;
 }
 
   
 
 /**
  * Return the current image and select the next
- * @param *this The object which return the current image
- * @param *image The returned image (must be initialized)
+ * @param *image the returned Storage_image (Storage *this, must be initialized)
  */
 gboolean  Storage_get (Storage *this, guchar *image)
 {
   /* Variables and pre-cond */
-  guint nb = 0;
+  gboolean ret = FALSE;
+  gint frameFinished = 0;
+  gint endOfFile = 0;
+  AVPacket packet;
+  AVFrame *frame=avcodec_alloc_frame();
   g_return_val_if_fail(this != NULL, FALSE);
-  g_return_val_if_fail(this->file != NULL, FALSE);
+  g_return_val_if_fail(this->streamIndex != -1, FALSE);
   /* Code */
-  nb = fread(image, sizeof(guchar), 
-	     (this->width*this->height*this->bytesPerPixel), 	     
-	     this->file);
-  if(nb == 0) {
-    g_message("End of the file");
-    return FALSE;
+  while(!frameFinished && !endOfFile) {
+     if(av_read_frame(this->formatCtx, &packet)>=0) {
+	// Is this a packet from the video stream?
+	if(packet.stream_index==this->streamIndex) {
+	  // Decode video frame
+	  avcodec_decode_video(this->codecCtx, frame, &frameFinished, 
+			       packet.data, packet.size);
+	}
+	av_free_packet(&packet);
+     }
+     else {
+       endOfFile = 1;
+     }
   }
-  if(nb != (this->width*this->height*this->bytesPerPixel)) {
-    g_warning("Impossible to read the temporary file");
-    return FALSE;
+  /* Did we get a video frame? */
+  if(frameFinished) {
+    convertToRGB24(this, frame, image);
+    ret = TRUE;
   }
-  return TRUE;
+  av_free(frame);
+  return ret;
 }
 
   
-
 /**
- * Return the current image and select the previous
- * @param *this The object
- * @param *image The returned image (must be initialized)
+ * Seek to a frame
+ * @param pos pourcentage position of frame in total timeline
  */
-gboolean  Storage_getReverse (Storage *this, guchar *image)
+gboolean  Storage_seek (Storage *this, guint pos)
 {
   /* Variables and pre-cond */
-  guint nb = 0;
-  gint err = 0;
+  int64_t duration = this->formatCtx->duration;
+  gint durationFactor = 100;
   g_return_val_if_fail(this != NULL, FALSE);
-  g_return_val_if_fail(this->file != NULL, FALSE);
-  nb = ftell(this->file);
-  if(nb == 0) {
-    g_message("Start of the file");
-    return FALSE;
-  }
-  err = fseek(this->file, 
-	      -(this->width*this->height*this->bytesPerPixel), 
-	      SEEK_CUR);
-  if(err != 0) {
-    g_warning("Impossible to seek in the stream");
-    return FALSE;
-  }
+  g_return_val_if_fail(this->streamIndex != -1, FALSE);
   /* Code */
-  nb = fread(image, 
-	     sizeof(guchar), 
-	     (this->width*this->height*this->bytesPerPixel), 	     
-	     this->file);
-  if(nb != (this->width*this->height*this->bytesPerPixel)) {
-    g_warning("Impossible to read the temporary file");
-    return FALSE;
-  }
-  err = fseek(this->file, 
-	      -(this->width*this->height*this->bytesPerPixel), 
-	      SEEK_CUR);
-  if(err != 0) {
-    g_warning("Impossible to seek in the stream");
-    return FALSE;
-  }
-  return TRUE;
-  
-}
-
-  
-
-/**
- * Test if the object is on reading or recording
- * @param *this The object to be tested
- */
-gboolean  Storage_isOpen (Storage *this)
-{
-  /* Variables and pre-cond */
-  g_return_val_if_fail(this != NULL, FALSE);
-  /* Code */
-  if(this->file != NULL) {
+  if(av_seek_frame(this->formatCtx, this->streamIndex, duration * pos / durationFactor) >= 0) {
     return TRUE;
   }
   else {
@@ -267,21 +229,89 @@ gboolean  Storage_isOpen (Storage *this)
   }
 }
 
-  
+/**
+ * Test if the object is loaded
+ */
+gboolean  Storage_isLoaded (Storage *this)
+{
+  /* Variables and pre-cond */
+  g_return_val_if_fail(this != NULL, FALSE);
+  /* Code */
+  if(this->streamIndex != -1) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
 
 /**
- * Stop the recording or reading and close the file
- * @param *this The object to be closed
+ * Stop the reading and close the video file
  */
 void  Storage_close (Storage *this)
 {
   /* Variables and pre-cond */
   g_return_if_fail(this != NULL);
-  g_return_if_fail(this->file != NULL);
+  g_return_if_fail(this->streamIndex != -1);
   /* Code */
-  fclose(this->file);
-  this->file = NULL;
+  avcodec_close(this->codecCtx);
+  av_close_input_file(this->formatCtx);
+  this->streamIndex = -1;
 }
 
-  
+static void convertToRGB24(Storage *this, AVFrame *picture, guchar *image) {
+  /* Variables and pre-cond */
+  AVFrame *output=NULL;
+  uint8_t *output_buf;
+  int size;
+  int pix_fmt = PIX_FMT_RGB24;
+  g_return_if_fail(this != NULL);
+  /* Code */
+  output = avcodec_alloc_frame ();
+  if (!output) {
+    g_warning("Couldn't allocate frame for conversion");
+    return;
+  }
 
+  size = avpicture_get_size (pix_fmt, 
+			     this->codecCtx->width, 
+			     this->codecCtx->height);
+  output_buf = av_malloc (size);
+  if (!output_buf){
+    av_free (output);
+    g_warning("Couldn't allocate output for conversion");
+    return;
+  }
+
+  avpicture_fill ((AVPicture *) output, output_buf, pix_fmt, 
+		  this->codecCtx->width, this->codecCtx->height);
+  img_convert((AVPicture *)output,pix_fmt,
+	      (AVPicture *)picture,
+	      this->codecCtx->pix_fmt,
+	      this->codecCtx->width,
+	      this->codecCtx->height);
+  
+  if(this->hasChangedOrientation) {
+    guchar *p, *q;
+    guint x, y;
+    guint src_width = this->codecCtx->width;
+    guint src_height = this->codecCtx->height;
+    guint dst_width = 0;
+    guint dst_height = 0;
+
+    Storage_getInfos(this, &dst_width, &dst_height, NULL, NULL);
+    for (y = 0; y < src_height; y++) { 
+      for (x = 0; x < src_width; x++) {
+	p = output->data[0] + (src_width * y + x)*3;
+	q = image + (dst_width * x + y)*3;
+	memcpy (q, p, 3);
+      }
+    }
+  }
+  else {
+    memcpy(image, output->data[0], size);
+  }
+  av_free(output_buf);
+  av_free(output);
+}

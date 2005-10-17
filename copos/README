@@ -8,7 +8,7 @@
 General Information
 ===================
 
-COPOS is a software to control a webcam and transform it as a 3D scanner
+COPOS is a software to analyse a video file and construct a cloud of point
 
 The official web site is:
   http://copos.berlios.de/
@@ -28,7 +28,7 @@ Supported Platforms
 
 Currently COPOS supports
 
-  * Linux with a webcam
+  * Linux 
       Tested under Linux
 
 
@@ -47,6 +47,7 @@ Requirements
 
   * GtkGLExt 1.0 or later
 
+  * FFMPEG (http://ffmpeg.sourceforge.net/index.php)
 
 Installation
 ============
@@ -64,10 +65,8 @@ Please read INSTALL or type "./configure --help" for more details.
 Configure Options
 =================
 
-  --disable-pwc		disable Philips740K module compilation
-  --include-pwc=DIR	pwc-ioctl.h is installed in DIR [default=/usr/src/linux/drivers/usb/media/]
 
-Building the CVS Version of GtkGLExt
+Building the CVS Version of COPOS
 ====================================
 
 COPOS's Berlios CVS repository can be checked out through

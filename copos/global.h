@@ -1,10 +1,10 @@
 /************************************************************************
 * Fichier          : global.h
-* Date de Creation : mar aoû 10 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on mar aoû 10 2004 at 11:05:55 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #ifndef GLOBAL_H
@@ -12,23 +12,25 @@ This file was generated on mar aoû 10 2004 at 11:05:55 with umbrello
 
 #include <string.h>
 #include <glib.h>
-#include <gmodule.h>
 #include <gtk/gtk.h>
-#include "plugins/webcam.h"
-#include "engine/storage.h"
+
 #include "engine/imageanalyse.h"
 #include "engine/perspectivecreator.h"
 #include "engine/collector.h"
+#include "engine/storage.h"
+
+
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
-#  define POSITIONS_PIX PACKAGE_DATA_DIR"/copos.png"
+#  define POSITIONS_PIX PACKAGE_DATA_DIR"/positions.png"
+#  define ABOUT_PIX PACKAGE_DATA_DIR"/about.png"
 #else
-#  define PACKAGE_DATA_DIR "plugins"
-#  define POSITIONS_PIX "./copos.png"
+#  define POSITIONS_PIX "./positions.png"
+#  define ABOUT_PIX "./about.png"
 #  define ENABLE_NLS 1
 #  define GETTEXT_PACKAGE "copos"
-#  define PACKAGE_LOCALE_DIR "/home/bug/projet/Copos/locale"
+#  define PACKAGE_LOCALE_DIR "/home/bug/projet/copos2/locale"
 #endif
 
 
@@ -53,7 +55,7 @@ This file was generated on mar aoû 10 2004 at 11:05:55 with umbrello
 
 /**
   * Class Global
-  * A class containing the data and functions used by the application
+  *  A class containing the data and functions used by the application
   * 
   */
 typedef struct Global
@@ -61,22 +63,6 @@ typedef struct Global
   /**
    * Fields
    */
-  /**
-   * The list of the open modules 
-   */
-   GSList *modules;
-  /**
-   * The list of the names of open modules 
-   */
-   GSList *modulesNames;
-  /**
-   * The path to search the modules
-   */
-   gchar *modulesPath;
-  /**
-   * The current webcam of the software
-   */
-   Webcam *webcam;
   /**
    * The current storage object
    */
@@ -114,73 +100,66 @@ typedef struct Global
   
   /**
    * Display an error message to the user
-   * @param *message The message to be displayed
+   * @param *message the message to be displayed
    */
   void  Global_errMessage (const gchar *message);
     
   
   /**
    * A function to put a pixel in a pixbuf
-   * @param *pixbuf The pixbuf to be modified
-   * @param x Coordinate x
-   * @param y Coordinate y
-   * @param red The red of the pixel
-   * @param green The green of the pixel
-   * @param blue The blue of the pixel
+   * @param *pixbuf the pixbuf to be modified
+   * @param x coordinate x
+   * @param y coordinate y
+   * @param red the red value of the pixel
+   * @param green the green value of the pixel
+   * @param blue the blue value of the pixel
    */
-  void  Global_putPixel (GdkPixbuf *pixbuf, int x, int y, guchar red, guchar green, guchar blue);
+  void  Global_putPixel (GdkPixbuf *pixbuf, gint x, gint y, guchar red, guchar green, guchar blue);
     
   
   /**
    * A function to transform an array of guchar to a pixbuf
-   * @param *src The image source
-   * @param *dst The initialized pixbuf destination
+   * @param *src the source image
+   * @param *dst the initialized pixbuf destination
    */
   void  Global_gucharToGdkPixbuf (guchar *src, GdkPixbuf *dst);
     
-  
   /**
-   * The function to search and open the modules
+   * A function to get the next image of the storage class
    */
-  void  Global_loadModulesDir ();
-    
-  
-  /**
-   * Store the webcam
-   * @param *webcam The webcam to store
-   */
-  void  Global_setWebcam (Webcam *webcam);
-    
+  GdkPixbuf*  Global_getPixbufFromStorage ();
   
   /**
    * Store the imageAnalyse
-   * @param imageAnalyse The ImageAnalyse to store
+   * @param *imageAnalyse the ImageAnalyse to store
    */
   void  Global_setImageAnalyse (ImageAnalyse *imageAnalyse);
     
   
   /**
    * Store the perspectiveCreator
-   * @param *perspectiveCreator The perspectiveCreator to store
+   * @param *perspectiveCreator the perspectiveCreator to store
    */
   void  Global_setPerspectiveCreator (PerspectiveCreator *perspectiveCreator);
     
   
   /**
    * Store the collector
-   * @param *collector The collector to store
+   * @param *collector the collector to store
    */
   void  Global_setCollector (Collector *collector);
     
+  
   /**
    * Store the storage object
-   * @param *storage The storage to be stored
+   * @param *storage the storage to be stored
    */
   void  Global_setStorage (Storage *storage);
-
+    
+  
   /**
    * Add the label to the last page
-   * @param *str The label of the last page
+   * @param *str the label of the last page
    */
   void  Global_setLabel (const gchar *str);
     

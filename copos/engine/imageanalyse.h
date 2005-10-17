@@ -1,10 +1,10 @@
 /************************************************************************
 * Fichier          : imageanalyse.h
-* Date de Creation : jeu aoû 12 2004
+* Date de Creation : Thu Sep 29 2005
 * Auteur           : Ronan Billon
 * E-mail           : cirdan@mail.berlios.de
 
-This file was generated on jeu aoû 12 2004 at 11:44:14 with umbrello
+This file was generated with umbrello
 **************************************************************************/
 
 #ifndef IMAGEANALYSE_H
@@ -13,7 +13,6 @@ This file was generated on jeu aoû 12 2004 at 11:44:14 with umbrello
 #include <math.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include "engine/point2d.h"
-
 
 /**
   * Class ImageAnalyse
@@ -48,14 +47,12 @@ typedef struct ImageAnalyse
   
   /**
    * Destructor
-   * @param *this The object to be destroyed
    */
   void  ImageAnalyse_destroy (ImageAnalyse *this);
     
   
   /**
-   * Takes an RGB image (pixbuf) and returns over an array of 2D points 
-   * @param *this The object which perform the analyze
+   * Takes an RGB ImageAnalyse_image (ImageAnalyse *this, pixbuf) and returns over an array of 2D points 
    * @param *pixbuf The pixbuf to be analyzed
    */
   GSList*  ImageAnalyse_computePixbuf (ImageAnalyse *this, GdkPixbuf *pixbuf);
@@ -63,13 +60,12 @@ typedef struct ImageAnalyse
   
   /**
    * Takes an RGB image and returns over an array of 2D points
-   * @param *this The object which perform the analyze
-   * @param *image The image to be analyze
-   * @param width The width of the image
-   * @param height The height of the image
-   * @param bytesPerPixel The number of bytes of the image
+   * @param *image the image to be analyze
+   * @param width the width of the image
+   * @param height  the height of the image
+   * @param bytesPerPixel the number of bytes of the image
    */
-  GSList*  ImageAnalyse_computeImage (ImageAnalyse *this, guchar *image, guint width, guint height, guint bytesPerPixel);
+  GSList*  ImageAnalyse_computeImage (ImageAnalyse *this, guchar *image, guint width, guint height , guint bytesPerPixel);
     
   
 #endif //IMAGEANALYSE_H

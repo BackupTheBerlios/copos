@@ -1,19 +1,9 @@
-/************************************************************************
-* Fichier          : mainwindow.h
-* Date de Creation : mar aoû 10 2004
-* Auteur           : Ronan Billon
-* E-mail           : cirdan@mail.berlios.de
-
-This file was generated on mar aoû 10 2004 at 11:05:55 with umbrello
-**************************************************************************/
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <gtk/gtk.h>
 #include "global.h"
-#include "introduction.h"
-
+#include "display/introduction.h"
 /**
   * Class MainWindow
   * The main window of the software (gathers all the stages of the capture)

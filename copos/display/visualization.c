@@ -248,23 +248,24 @@ on_btn_save_clicked                    (GtkButton       *button,
   g_return_if_fail(GTK_IS_BUTTON(button));
   g_return_if_fail(user_data == NULL);
   /* Code */
-  file_selector = gtk_file_selection_new ("Please select a file for saving.");
-  gtk_file_selection_hide_fileop_buttons(GTK_FILE_SELECTION(file_selector));
-  switch (gtk_dialog_run(GTK_DIALOG(file_selector))) {
-  case GTK_RESPONSE_OK: {
+  file_selector = gtk_file_chooser_dialog_new (_("Save File"),
+					       NULL,
+					       GTK_FILE_CHOOSER_ACTION_SAVE,
+					       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					       GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+					       NULL);
+  
+  if (gtk_dialog_run (GTK_DIALOG (file_selector)) == GTK_RESPONSE_ACCEPT) {
+    char *filename;
     Global *global = Global_get();
     Collector *collector = global->collector;
     g_return_if_fail(global != NULL);
     g_return_if_fail(collector != NULL);
-    Collector_save(collector, gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector)));
-    break;
+    filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (file_selector));
+    Collector_save(collector, filename);
+    g_free (filename);
   }
-  case GTK_RESPONSE_CANCEL:
-  case GTK_RESPONSE_NONE:
-  default:
-    break;
-  }
-  gtk_widget_destroy(file_selector);
+  gtk_widget_destroy (file_selector);
 }
 
 /**
