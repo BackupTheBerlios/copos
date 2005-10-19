@@ -111,8 +111,6 @@ void  Storage_getInfos (Storage *this, guint *width, guint *height, guint *bytes
 gboolean  Storage_load (Storage *this)
 {
   /* Variables and pre-cond */
-  float framerate = 0;
-  guint duration = 0;
   gint i=0;
   AVFormatContext *formatCtx = NULL;
   AVCodecContext *codecCtx;
@@ -159,10 +157,7 @@ gboolean  Storage_load (Storage *this)
     codecCtx->frame_rate_base=1000;
   }
   this->codecCtx = codecCtx;
-  /* Compute the approximately number of frame*/
-  framerate = (float)codecCtx->frame_rate / codecCtx->frame_rate_base;
-  duration = formatCtx->duration / AV_TIME_BASE;
-  this->nbImages = duration * framerate;
+  this->nbImages = formatCtx->streams[this->streamIndex]->duration;
   this->codecName = strdup(codec->name);
 
   return TRUE;

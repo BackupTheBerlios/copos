@@ -99,9 +99,6 @@ on_btn_browse_clicked                  (GtkButton       *button,
     g_free (filename);
   }
   gtk_widget_destroy (dialog);
-  if(load(this)) {
-    gtk_widget_set_sensitive(GTK_WIDGET(this->btn_forward), TRUE);
-  }
 }
 
 /**

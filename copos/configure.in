@@ -67,16 +67,43 @@ else
 fi
 
 dnl Checks for header files.
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+dnl Checks for library functions.
+AC_CHECK_FUNCS(strdup)
 AC_HEADER_STDC
 AC_CHECK_HEADERS(unistd.h)
 AC_CHECK_HEADERS(ffmpeg/avcodec.h)
 AC_CHECK_HEADERS(ffmpeg/avformat.h)
+AC_RUN_IFELSE([
+	#include <stdio.h>
+	#include <ffmpeg/avcodec.h>
+	#include <ffmpeg/avformat.h>
+	
+	int main(void)
+	{
+	    if(avcodec_version() != LIBAVCODEC_VERSION_INT) 
+	    {
+		fprintf(stderr,"(FFMpeg) AVcodec header and library mismatch detected\n");
+		fprintf(stdout,"*******************************************************\n");
+		fprintf(stdout,"*(FFMpeg) AVcodec header and library mismatch detected*\n");
+		fprintf(stdout,"*******************************************************\n");
+		exit(-1);
+	    }
+	    if( FFMPEG_VERSION_INT != 0x000409)
+	    {
+		fprintf(stderr,"(FFMpeg) AVcodec different version\n");
+		fprintf(stdout,"*************************************************\n");
+		fprintf(stdout,"*(FFMpeg) AVcodec different version %4X != %4X*\n", FFMPEG_VERSION_INT, 0x000409);
+		fprintf(stdout,"*************************************************\n");
+		exit(-1);
+	    }
+	    exit(0);
+	}
 
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-
-dnl Checks for library functions.
-AC_CHECK_FUNCS(strdup)
+	      ],
+              [AC_MSG_RESULT([checking ffmpeg version... yes])],
+              [AC_MSG_NOTICE([There is a problem with FFMpeg, if you know what you are doing, continue])])
 
 AC_OUTPUT(Makefile engine/Makefile display/Makefile po/Makefile.in )
 
