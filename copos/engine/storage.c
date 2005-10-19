@@ -130,7 +130,7 @@ gboolean  Storage_load (Storage *this)
     return FALSE;
   }
   for(i=0; i<formatCtx->nb_streams; i++) {
-    if(formatCtx->streams[i]->codec.codec_type==CODEC_TYPE_VIDEO) {
+    if(formatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO) {
       this->streamIndex=i;
       break;
     }
@@ -141,7 +141,7 @@ gboolean  Storage_load (Storage *this)
   }
   this->formatCtx = formatCtx;
   /* find the correct codec context */
-  codecCtx=&formatCtx->streams[this->streamIndex]->codec;
+  codecCtx=formatCtx->streams[this->streamIndex]->codec;
   codec=avcodec_find_decoder(codecCtx->codec_id);
   if(codec==NULL) {
     g_warning("Couldn't find a codec for the stream");
@@ -153,9 +153,7 @@ gboolean  Storage_load (Storage *this)
     g_warning("Couldn't open the codec");
     return FALSE;
   }
-  if(codecCtx->frame_rate>1000 && codecCtx->frame_rate_base==1) {
-    codecCtx->frame_rate_base=1000;
-  }
+
   this->codecCtx = codecCtx;
   this->nbImages = formatCtx->streams[this->streamIndex]->duration;
   this->codecName = strdup(codec->name);
@@ -216,7 +214,7 @@ gboolean  Storage_seek (Storage *this, guint pos)
   g_return_val_if_fail(this != NULL, FALSE);
   g_return_val_if_fail(this->streamIndex != -1, FALSE);
   /* Code */
-  if(av_seek_frame(this->formatCtx, this->streamIndex, duration * pos / durationFactor) >= 0) {
+  if(av_seek_frame(this->formatCtx, this->streamIndex, duration * pos / durationFactor, AVSEEK_FLAG_BACKWARD) >= 0) {
     return TRUE;
   }
   else {
