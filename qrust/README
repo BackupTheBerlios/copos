@@ -74,9 +74,9 @@ When prompted for a password for anonymous, simply press the Enter key.
       login
   $ cvs -z3 \
       -d:pserver:anonymous@cvs.berlios.de:/cvsroot/copos \
-      co copos
+      co qrust
 
-When you are at work on the CVS version of COPOS, you can use autogen.sh
+When you are at work on the CVS version of Qrust, you can use bootstrap.sh
 for generating configure script and Makefiles.
 
   $ ./bootstrap.sh
