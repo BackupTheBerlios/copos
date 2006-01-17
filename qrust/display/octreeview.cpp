@@ -84,7 +84,6 @@ unsigned int OctreeView::load( const QString &fileName )
     }
     is.ignore(256,'\n');
   }
-  std::cout << "END";
   if(lp.empty()) {
     std::cout << "Format error" << std::endl;
     return 0;
