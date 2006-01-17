@@ -8,6 +8,10 @@ General Information
 
 Qrust is a software designed to analyse a cloud of point and try to reconstruct a mesh (with triangles)
 
+/!\
+To test this software, you can use the files in the 'examples' directory.
+/!\
+
 The official web site is:
   http://copos.berlios.de/
 
