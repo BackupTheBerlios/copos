@@ -56,26 +56,38 @@ unsigned int OctreeView::load( const QString &fileName )
   selectedIterator.clear();
   std::ifstream is(fileName);
   std::list<Point> lp;
-  int n;
+
   double min = 1000000.0;
   double max = 0.0;
   
-  is >> n;
-  std::cout << "Reading " << n << " points " << std::endl;
   Point p;
   double moy_X = 0.0;
   double moy_Y = 0.0;
   double moy_Z = 0.0;
 
-  for( ; n>0 ; n--)    {
-    is >> p;
-    if(p[0]>max) max = p[0]; if(p[0]<min) min = p[0];
-    if(p[1]>max) max = p[1]; if(p[1]<min) min = p[1];
-    if(p[2]>max) max = p[2]; if(p[2]<min) min = p[2];
-    moy_X += p[0];
-    moy_Y += p[1];
-    moy_Z += p[2];
-    lp.push_back(p);
+  while(! is.eof()) {
+    if(is.fail()) {
+      std::cout << "Format error" << std::endl;
+      return 0;
+    }
+    char c[3];
+    is.get(c, 3, ' ');
+    if(strncmp(c,"v",3) == 0) {
+      is >> p;
+      if(p[0]>max) max = p[0]; if(p[0]<min) min = p[0];
+      if(p[1]>max) max = p[1]; if(p[1]<min) min = p[1];
+      if(p[2]>max) max = p[2]; if(p[2]<min) min = p[2];
+      moy_X += p[0];
+      moy_Y += p[1];
+      moy_Z += p[2];
+      lp.push_back(p);
+    }
+    is.ignore(256,'\n');
+  }
+  std::cout << "END";
+  if(lp.empty()) {
+    std::cout << "Format error" << std::endl;
+    return 0;
   }
   center.setValue(moy_X/lp.size(), moy_Y/lp.size(), moy_Z/lp.size());
   radius = fabs((max-min));

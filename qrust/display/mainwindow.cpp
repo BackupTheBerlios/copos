@@ -2,7 +2,7 @@
 ** Form implementation generated from reading ui file 'mainwindow.ui'
 **
 ** Created: lun nov 28 17:53:38 2005
-**      by: The User Interface Compiler ($Id: mainwindow.cpp,v 1.1 2006/01/16 18:28:15 cirdan Exp $)
+**      by: The User Interface Compiler ($Id: mainwindow.cpp,v 1.2 2006/01/17 15:51:32 cirdan Exp $)
 **
 ** WARNING! All changes made in this file will be lost!
 ****************************************************************************/
@@ -183,7 +183,7 @@ void MainWindow::languageChange()
 
 void MainWindow::fileOpen()
 {
-  QString fn = QFileDialog::getOpenFileName( QString::null, QString::null,
+  QString fn = QFileDialog::getOpenFileName( QString::null, "Wavefront Object (*.obj)",
 					     this);
   if ( !fn.isEmpty() ) {
     statusBar()->message( fn, 2000 );
