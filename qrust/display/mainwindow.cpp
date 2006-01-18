@@ -2,7 +2,7 @@
 ** Form implementation generated from reading ui file 'mainwindow.ui'
 **
 ** Created: lun nov 28 17:53:38 2005
-**      by: The User Interface Compiler ($Id: mainwindow.cpp,v 1.2 2006/01/17 15:51:32 cirdan Exp $)
+**      by: The User Interface Compiler ($Id: mainwindow.cpp,v 1.3 2006/01/18 10:39:09 cirdan Exp $)
 **
 ** WARNING! All changes made in this file will be lost!
 ****************************************************************************/
@@ -346,7 +346,9 @@ void MainWindow::generateCrust()
   crustView->setProgressDialog(progress);
 
   connect( rdb_onePole, SIGNAL( toggled(bool) ), crustView, SLOT( onePole_toggled(bool) ) );
+  connect( rdb_onePole, SIGNAL( toggled(bool) ), dlgCrust->glView, SLOT(updateGL ()));
   connect( rdb_extrema, SIGNAL( toggled(bool) ), crustView, SLOT( extrema_toggled(bool) ) );
+  connect( rdb_extrema, SIGNAL( toggled(bool) ), dlgCrust->glView, SLOT(updateGL ()));
   
   progress->show();
 
